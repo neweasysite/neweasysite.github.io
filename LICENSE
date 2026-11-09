@@ -1,0 +1,20 @@
+Copyright (c) 2026 Kamil Goda. Wszelkie prawa zastrzeżone. / All rights reserved.
+
+Gra "Gryzelda i Kryształ Odpowiedzi" (kod, grafika, teksty, postacie i fabuła)
+jest chroniona prawem autorskim. Wolno ją wyłącznie wyświetlać i grać w nią
+pod adresem https://neweasysite.github.io/gryzelda/.
+
+Bez pisemnej zgody autora zabronione jest kopiowanie, klonowanie, modyfikowanie,
+rozpowszechnianie, publikowanie, sublicencjonowanie lub wykorzystywanie
+jakiejkolwiek części tego repozytorium, w całości lub we fragmentach,
+w tym do trenowania modeli AI.
+
+The game "Gryzelda i Kryształ Odpowiedzi" (code, art, text, characters and story)
+is protected by copyright. You may only view and play it at
+https://neweasysite.github.io/gryzelda/. Copying, forking for redistribution,
+modifying, distributing, publishing, sublicensing or otherwise using any part of
+this repository, in whole or in part (including for AI training), is prohibited
+without the author's prior written permission.
+
+Bundled third-party libraries (React, React DOM) remain under their own MIT
+licenses, whose notices are retained in the distributed files.
