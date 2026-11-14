@@ -1,0 +1,23 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: #0c0816;
+  color: #fff4dc;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+#root {
+  position: fixed;
+  inset: 0;
+}
+
+button,
+[role="button"] {
+  cursor: pointer;
+}
+
+canvas {
+  image-rendering: pixelated;
+}
