@@ -1129,6 +1129,10 @@ api.Qf = function Qf() {
             (Se(typeof re == "string" ? re : $.go || ""), xt());
           }),
         Ge = api.fh(p, m, X);
+      if (X === "" && api.duelLine) {
+        let beat = api.duelLine(p, m);
+        beat && K(beat);
+      }
       if (((X === "train" || X === "buff" || X === "shop") && (p.f["kn:" + X + ":" + m] = !0), Ge))
         (Ge.lines.forEach(K), Ge.opts.forEach(Ce));
       else if (m === "bogdan")

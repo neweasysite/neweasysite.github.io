@@ -62,6 +62,7 @@ api.nh = function nh(e) {
       boop: -1,
       hp: t.dark ? 10 : 6,
       dead: !1,
+      fall: 0,
       flee: 0,
     });
 };
@@ -69,7 +70,10 @@ api.nh = function nh(e) {
 api.flockTick = function flockTick(e, dt) {
   if (!e.flock) return;
   for (let s of e.flock) {
-    if (s.dead) continue;
+    if (s.dead) {
+      s.fall > 0 && (s.fall -= dt);
+      continue;
+    }
     if (s.flee > 0) s.flee -= dt;
     if (s.wait > 0) {
       ((s.wait -= dt), (s.moving = !1));
@@ -139,6 +143,15 @@ api.ah = function ah(e, t) {
   for (let i of n.npcs) {
     let a = e.np[i.id];
     if (!a) continue;
+    if (a.inv > 0) a.inv -= t;
+    if (a.duel) {
+      api.duelStep(e, i.id, a, t);
+      continue;
+    }
+    if (a.shy > 0) {
+      api.slideNpc(e, n, i.id, a, t);
+      continue;
+    }
     let r = i.id in api.ep,
       s = api.ep[i.id] || 0;
     if (!r) continue;
@@ -225,6 +238,92 @@ const NPC_LINE = {
   kot: "Miau!",
 };
 
+const NPC_LOSS = {
+  bogdan: "Dobra. Jesteś silniejsza, niż wyglądasz. I tyle.",
+  wanda: "Młot odkładam. Masz rękę. Nic więcej nie było.",
+  zdzich: "Łopata w ziemię. Szacunek. I po sprawie.",
+  darek: "Dostawa przyjęta. Ty wygrałaś. Ja idę dalej.",
+  hela: "Owce by się wstydziły. Ja też. Koniec.",
+  henio: "Kufel na stole. Ty na nogach. Dobra.",
+  staszek: "Strach na wróble padł. Nie mów owcom.",
+};
+
+api.slideNpc = function slideNpc(e, zone, id, a, dt) {
+  a.shy -= dt;
+  let cx = a.gx - a.x,
+    cy = a.gy - a.y;
+  if (Math.hypot(cx, cy) < 0.5 || a.shy <= 0) {
+    ((a.shy = 0), (a.moving = !1), (a.wait = 0.8));
+    return;
+  }
+  let sp = 28 * dt,
+    mx = Math.abs(cx) >= Math.abs(cy) ? Math.sign(cx) * Math.min(sp, Math.abs(cx)) : 0,
+    my = mx ? 0 : Math.sign(cy) * Math.min(sp, Math.abs(cy));
+  api.Ap(e, zone, a.x + mx, a.y + my, id)
+    ? ((a.x += mx),
+      (a.y += my),
+      (a.moving = !0),
+      (a.walk += dt),
+      mx ? ((a.fx = Math.sign(mx)), (a.fy = 0)) : ((a.fx = 0), (a.fy = Math.sign(my) || 1)))
+    : ((a.shy = 0), (a.moving = !1));
+};
+
+api.npcYield = function npcYield(e, id, n) {
+  ((n.duel = !1),
+    (n.lost = !0),
+    (n.swing = 0),
+    (n.hp = n.maxHp),
+    (e.f["beat:" + id] = !0),
+    (e.dirty = !0),
+    (n.shy = 0.5),
+    (n.gx = n.homeX == null ? n.x : n.homeX),
+    (n.gy = n.homeY == null ? n.y : n.homeY));
+  api.Ne && api.Ne(e, n.x, n.y - 18, NPC_LOSS[id] || "Dobra. Jesteś silniejsza.", "#ffd84a");
+  api.G && api.G(e, "chime");
+};
+
+api.duelStep = function duelStep(e, id, a, dt) {
+  if (!a.duel) return;
+  if (e.dead) {
+    ((a.duel = !1), (a.swing = 0));
+    return;
+  }
+  ((a.swing = Math.max(0, (a.swing || 0) - dt)), (a.atk = (a.atk || 0) - dt));
+  let dx = e.px - a.x,
+    dy = e.py - a.y,
+    dist = Math.hypot(dx, dy) || 1;
+  (Math.abs(dx) > Math.abs(dy)
+    ? ((a.fx = Math.sign(dx) || 1), (a.fy = 0))
+    : ((a.fx = 0), (a.fy = Math.sign(dy) || 1)));
+  if (dist > 20) {
+    let sp = 26 * dt,
+      mx = Math.abs(dx) >= Math.abs(dy) ? (dx / dist) * sp : 0,
+      my = mx ? 0 : (dy / dist) * sp,
+      zone = api.Cn(e);
+    api.Ap(e, zone, a.x + mx, a.y + my, id)
+      ? ((a.x += mx), (a.y += my), (a.moving = !0), (a.walk += dt))
+      : (a.moving = !1);
+    return;
+  }
+  a.moving = !1;
+  if (a.atk <= 0 && a.swing <= 0) {
+    a.swing = 0.28;
+    a.atk = 0.9;
+    let dmg = Math.max(
+      1,
+      Math.round(1.5 + a.lvl * 0.7 + Math.max(0, a.lvl - (e.lvl || 1)) * 0.35),
+    );
+    api.Oa && api.Oa(e, dmg, a.x, a.y);
+    api.G && api.G(e, "swing");
+  }
+};
+
+api.duelLine = function duelLine(e, id) {
+  if (!e || !e.f || !e.f["beat:" + id] || e.f["beatSaid:" + id]) return "";
+  ((e.f["beatSaid:" + id] = !0), (e.dirty = !0));
+  return NPC_LOSS[id] || "Dobra. Jesteś silniejsza.";
+};
+
 api.pokeWorld = function pokeWorld(e, x, y, rad, dmg, token, fx, fy) {
   if (!e) return !1;
   let hit = !1;
@@ -242,7 +341,7 @@ api.pokeWorld = function pokeWorld(e, x, y, rad, dmg, token, fx, fy) {
       ty = Math.max(s.y0, Math.min(s.y1, Math.floor(s.y / api.T) + ay * 2));
     ((s.gx = api.Y(tx)), (s.gy = api.Y(ty)));
     if (s.hp <= 0) {
-      s.dead = !0;
+      ((s.dead = !0), (s.fall = 0.45));
       e.coins = (e.coins || 0) + (s.dark ? 3 : 1);
       api.Es && api.Es(e, s.dark ? 8 : 3);
       api.Ne && api.Ne(e, s.x, s.y - 14, "bee...", "#f4f0e4");
@@ -255,21 +354,35 @@ api.pokeWorld = function pokeWorld(e, x, y, rad, dmg, token, fx, fy) {
     let n = e.np[id];
     if (!n || n.hitId === token) continue;
     if (Math.abs(n.x - x) >= rad + 8 || Math.abs(n.y - y) >= rad + 8) continue;
+    if (n.duel && (n.inv || 0) > 0) continue;
     n.hitId = token;
     hit = !0;
     let dx = Math.sign(n.x - e.px) || -fx || 1,
       dy = Math.sign(n.y - e.py) || -fy || 0,
-      nx = n.x + dx * 16,
-      ny = n.y + dy * 12;
-    zone && api.Ap && api.Ap(e, zone, nx, ny, id)
-      ? ((n.x = nx), (n.y = ny), (n.gx = nx), (n.gy = ny))
-      : ((n.gx = n.x), (n.gy = n.y));
-    n.wait = 0.9;
-    api.Ne && api.Ne(e, n.x, n.y - 18, NPC_LINE[id] || "Ej.", "#f4ead8");
-    let lvl = NPC_FIGHT[id];
-    if (lvl) {
-      api.Ne && api.Ne(e, n.x, n.y - 28, "lvl " + lvl, "#ffd84a");
-      api.Oa && api.Oa(e, 6 + lvl, n.x, n.y);
+      lvl = NPC_FIGHT[id];
+    if (lvl && !n.lost && !e.f["beat:" + id]) {
+      if (!n.duel) {
+        ((n.duel = !0),
+          (n.lvl = lvl),
+          (n.maxHp = 12 + lvl * 4),
+          (n.hp = n.maxHp),
+          (n.atk = 0.55),
+          (n.swing = 0.28),
+          (n.homeX = n.x),
+          (n.homeY = n.y));
+        api.Ne && api.Ne(e, n.x, n.y - 28, "lvl " + lvl, "#ffd84a");
+        api.Ne && api.Ne(e, n.x, n.y - 18, NPC_LINE[id] || "Broń w dłoń.", "#f4ead8");
+      }
+      ((n.hp -= Math.max(1, Math.round(dmg || 1))), (n.inv = 0.25));
+      api.Ne && api.Ne(e, n.x, n.y - 12, String(Math.round(dmg || 1)), "#ffffff");
+      n.hp <= 0 && api.npcYield(e, id, n);
+    } else {
+      ((n.shy = 0.9), (n.gx = n.x + dx * 14), (n.gy = n.y + dy * 10), (n.wait = 0));
+      zone &&
+        api.Ap &&
+        !api.Ap(e, zone, n.gx, n.gy, id) &&
+        ((n.gx = n.x + dx * 8), (n.gy = n.y + dy * 6));
+      api.Ne && api.Ne(e, n.x, n.y - 18, n.lost ? NPC_LOSS[id] || "Ej." : NPC_LINE[id] || "Ej.", "#f4ead8");
     }
     api.G && api.G(e, "thud");
   }

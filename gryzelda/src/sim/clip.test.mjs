@@ -517,11 +517,35 @@ test("sheep die and run, fighters hit back, house doors sit in the middle", () =
   assert.equal(e.flock[0].dead, false);
   api.pokeWorld(e, 80, 80, 10, 9, 2, 1, 0);
   assert.equal(e.flock[0].dead, true);
+  assert.equal(e.flock[0].fall, 0.45);
   assert.equal(e.coins, 1);
-  let before = e.hp;
+  let before = e.hp,
+    bx = e.np.bogdan.x;
   api.pokeWorld(e, 200, 80, 10, 3, 3, 1, 0);
+  assert.equal(e.hp, before);
+  assert.equal(e.np.bogdan.x, bx);
+  assert.equal(e.np.bogdan.duel, true);
+  assert.equal(e.np.bogdan.lvl, 14);
+  assert.ok(e.np.bogdan.hp < e.np.bogdan.maxHp);
+  let fx = e.np.filip.x;
+  api.pokeWorld(e, 200, 120, 10, 3, 4, 1, 0);
+  assert.equal(e.np.filip.x, fx);
+  assert.ok(e.np.filip.shy > 0);
+  assert.notEqual(e.np.filip.gx, fx);
+  e.np.bogdan.x = 90;
+  e.np.bogdan.y = 80;
+  e.np.bogdan.atk = 0;
+  e.np.bogdan.swing = 0;
+  api.duelStep(e, "bogdan", e.np.bogdan, 0.2);
   assert.ok(e.hp < before);
-  assert.equal(e.np.filip.hitId, -1);
+  e.np.bogdan.hp = 1;
+  e.np.bogdan.inv = 0;
+  e.np.bogdan.hitId = -1;
+  api.pokeWorld(e, e.np.bogdan.x, e.np.bogdan.y, 12, 5, 9, 1, 0);
+  assert.equal(e.np.bogdan.duel, false);
+  assert.equal(e.f["beat:bogdan"], true);
+  assert.match(api.duelLine(e, "bogdan"), /silniejsza/);
+  assert.equal(api.duelLine(e, "bogdan"), "");
   for (const z of api.qe) {
     if (!z || z.theme !== "inn" || z.w > 18) continue;
     assert.equal(z.w % 2, 1, z.name + " width");

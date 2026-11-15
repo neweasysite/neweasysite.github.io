@@ -122,6 +122,7 @@ api.Dh = function Dh(e, t, n, i) {
               q - 24,
             )
           : e.drawImage(api.Xp(ye, Math.floor(r * 2 + z.tx) % 2), O - 11, q - 21);
+        F && F.duel && api.npcBlade(e, O, q, F);
         let k = q + api.t2(ye) - 2,
           L =
             (z.id === "bogdan" && (!t.f.bogdan || (t.f.won && !t.f.act2))) ||
@@ -222,8 +223,7 @@ api.Dh = function Dh(e, t, n, i) {
         },
       });
   for (let z of t.flock || [])
-    !z.dead &&
-      ie(z.x, z.y) &&
+    ie(z.x, z.y) &&
       ze.push({
         y: z.y,
         fn: () => {
@@ -231,6 +231,15 @@ api.Dh = function Dh(e, t, n, i) {
             face = z.face < 0 ? -1 : 1,
             sx = Math.round(z.x),
             sy = Math.round(z.y - 11);
+          if (z.dead) {
+            let k = z.fall > 0 ? 1 - z.fall / 0.45 : 1;
+            (e.save(),
+              e.translate(sx, sy + 8),
+              e.rotate(-1.57 * k),
+              e.drawImage(R, -10, -8),
+              e.restore());
+            return;
+          }
           if (face < 0) {
             e.save();
             e.translate(sx, 0);
@@ -956,6 +965,34 @@ api.a2 = function a2(e, t, n, i) {
     for (let r of a) api.o(e, "#ff4d6d", t + r[0], n + r[1], r[2], 1);
     (api.o(e, "#ffb0c0", t + 1, n + 1, 1, 1), e.restore());
   }
+};
+
+api.npcBlade = function npcBlade(e, x, y, a) {
+  let ang = Math.atan2(a.fy || 1, a.fx || 0);
+  a.swing > 0 && (ang += (1 - a.swing / 0.28) * 1.8 - 0.9);
+  let x2 = x + Math.cos(ang) * 11,
+    y2 = y - 10 + Math.sin(ang) * 11,
+    col = a.lvl >= 11 ? "#e8e8f4" : a.lvl >= 9 ? "#c9a227" : "#b0b6c4";
+  (api.o(e, "#5a3a22", (x + x2) / 2 - 1, (y - 10 + y2) / 2 - 1, 2, 2),
+    api.o(e, col, x2 - 2, y2 - 2, 4, 2),
+    api.o(e, "#1b1424", x - 8, y - 30, 16, 3),
+    api.o(
+      e,
+      "#ff5050",
+      x - 7,
+      y - 29,
+      Math.max(0, Math.round((14 * a.hp) / (a.maxHp || 1))),
+      1,
+    ),
+    (e.font = "6px monospace"),
+    (e.textAlign = "center"),
+    (e.textBaseline = "bottom"),
+    (e.fillStyle = "#1b1424"),
+    e.fillText("lvl " + a.lvl, x + 1, y - 31),
+    (e.fillStyle = "#ffd84a"),
+    e.fillText("lvl " + a.lvl, x, y - 32),
+    (e.textAlign = "left"),
+    (e.textBaseline = "alphabetic"));
 };
 
 api.yp = function yp(e, t) {
