@@ -23,6 +23,7 @@ api.initData = function initData() {
       id: "kam1",
       name: "Teczka przetargowa",
       giver: "kamila",
+      after: "kamMost",
       ask: "Pani Kamilo, co\u015B si\u0119 pali?",
       offer:
         "Pali si\u0119 termin! Wiatr porwa\u0142 mi teczk\u0119 z ofertami na remont drogi i pogna\u0142 j\u0105 na wsch\xF3d, przez ca\u0142\u0105 \u0141\u0105k\u0119 Czekania, a\u017C za rzek\u0119. Bez niej przetarg si\u0119 uniewa\u017Cni, a ja b\u0119d\u0119 pisa\u0107 pismo w sprawie pisma.",
@@ -1105,11 +1106,11 @@ api.initData = function initData() {
       after: "rys1",
       ask: "Haczyk już prosty. A ten spinacz?",
       offer:
-        "Darek nie dowozi za rzekę, most Kamili wciąż jest w remoncie. Z wyprostowanego haczyka Ryśka i archiwalnego spinacza zrobię urządzenie transportowe. Urząd musi to jakoś nazwać. Spinacz leży w Depocie Zagubionych Paczek, na półce, nie za kratą.",
+        "Most Kamili i tak jest w remoncie, Darek tamtędy nie przejdzie. Z haczyka i spinacza zrobię broń do haków: gwoździe, lampy, belki. Wody to nie wypije. Spinacz leży w Depocie Zagubionych Paczek, na półce, nie za kratą.",
       accept: "Duży, zardzewiały, z gumką. Nie kuję z tego miecza.",
       prog: "Bez spinacza jestem kowalką, nie urzędem.",
       turn: "Spiąć haczyk z spinaczem",
-      done: "Proszę. Celuj i użyj, kiedy nikogo nie ma obok. Łapie się gwoździa, haka albo lampy. Wody nie pije.",
+      done: "Proszę. Leży przy broniach. Weź spinacz do ręki i uderz w stronę haka. Użyj zostaje do rozmowy i do kamieni.",
       reward: { c: 40, xp: 70 },
       steps: [
         {
@@ -1126,27 +1127,34 @@ api.initData = function initData() {
     },
     {
       id: "kamMost",
-      name: "Odbiór częściowy mostu",
+      name: "Odbudowa mostu",
       giver: "kamila",
-      after: "kam1",
-      ask: "Most nadal w remoncie?",
+      ask: "Most na łące stoi?",
       offer:
-        "Formalnie tak. Jeśli przyniesiesz protokół odbioru częściowego z wschodniego brzegu, na wysokości dwunastego rzędu, przybiję pieczątkę i te trzy kafelki rzeki przestaną być rzeką.",
-      accept: "Leży na deskach za wodą. Spinaczem da się, piechotą dookoła też, tylko dłużej.",
-      prog: "Protokół wciąż na tamtym brzegu. Termin mostu też.",
-      turn: "Oddaj protokół mostu",
-      done: "Stempel. Trzy kafelki na dwunastym rzędzie są mostem. Spinacz już tam nie jest potrzebny.",
-      reward: { c: 60, xp: 80 },
+        "Nie stoi. Obie kładki zgniły, woda jest wodą. Zdzich wie, gdzie leżą trzy deski, po tej stronie rzeki. Przynieś je, ostempluję odbiór i otworzę przejście. Dopiero wtedy teczka za wodą ma sens.",
+      accept: "Deski są na Łące, zachodni brzeg, rząd dwunasty, zanim zacznie się woda. Nie za nią.",
+      prog: "Bez desek most jest tylko kreską w piśmie.",
+      turn: "Oddaj deski mostu",
+      done: "Stempel. Trzy kafelki na dwunastym rzędzie są mostem. Teraz możesz iść za rzekę. Teczka tam czeka, jak wiatr nie zmienił zdania.",
+      reward: { c: 40, xp: 45 },
       steps: [
+        {
+          t: "talk",
+          to: "zdzich",
+          ask: "Gdzie deski na most Kamili?",
+          hint: "Pan Zdzisiek, Wioska, droga na zachód od stawu",
+          txt: "Deski zostawiłem na łące, przy brzegu, rząd dwunasty, zanim woda. Sam nie niosę. Most jest niesprawny, a Darek też tamtędy nie przejdzie. Jakby był sprawny, tobym niósł.",
+          ok: "Wezmę je z brzegu",
+        },
         {
           t: "item",
           z: 1,
-          tx: 33,
+          tx: 26,
           ty: 12,
-          name: "Protokół odbioru",
+          name: "Trzy deski mostu",
           ic: "okladka",
-          hint: "Łąka Czekania: wschodni brzeg rzeki, rząd 12",
-          fin: "Protokół, trochę mokry. Kamila na to czeka.",
+          hint: "Łąka Czekania: zachodni brzeg rzeki, rząd 12, przed wodą",
+          fin: "Deski, trochę mokre na końcach. Kamila chce je ostemplować, nie polakierować.",
         },
       ],
     },
@@ -1461,8 +1469,14 @@ api.initData = function initData() {
         aff: "war",
         cd: 0.5,
       },
+      spinacz: {
+        name: "Spinacz",
+        desc: "Haczyk na gumce. Atak w stronę haka przyciąga. Nie rani i nie otwiera krat.",
+        aff: "",
+        cd: 0.45,
+      },
     }),
-    (api.Cf = ["miecz", "luk", "kusza", "iskry", "burza", "eskalacja", "zaglada"]),
+    (api.Cf = ["miecz", "luk", "kusza", "iskry", "burza", "eskalacja", "zaglada", "spinacz"]),
     (api.gf = {
       war: [
         {

@@ -255,7 +255,14 @@ api.Ak = function Ak(e) {
     (t.mp = api.ut(t)),
     api.godBind(t),
     api.Ks(t, t.cp.zone, t.cp.x, t.cp.y),
-    api.ne(t, "Wczytano zapis. Witaj z powrotem, " + t.look.name + "!", 3),
+    api.ne(
+      t,
+      t.f._bridgeBack
+        ? "Kładki się urwały. Jesteś w wiosce. Kamila ma odbiór mostu, po tej stronie rzeki."
+        : "Wczytano zapis. Witaj z powrotem, " + t.look.name + "!",
+      3.4,
+    ),
+    delete t.f._bridgeBack,
     t
   );
 };

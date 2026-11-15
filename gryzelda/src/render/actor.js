@@ -389,6 +389,13 @@ api.Jp = function Jp(e, t, n, i, a, r, s, u) {
     x = "#8b5a2b",
     M = "#e8dcc0",
     j = "#c9ced8";
+  if (t === "spinacz") {
+    (api.o(e, "#c4845a", n, i - 10, 1, 3),
+      api.o(e, "#d8dce2", n - 1, i - 8, 3, 2),
+      api.o(e, "#8a9098", n, i - 7, 1, 6),
+      api.o(e, "#d8dce2", n, i - 2, 2, 2));
+    return;
+  }
   if (t === "zaglada") {
     (Jp(e, "miecz", n, i, a, r, s, u),
       api.o(e, "#6a1020", n - 1, i - 12, 4, 3),

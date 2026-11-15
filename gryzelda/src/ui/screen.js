@@ -4329,12 +4329,13 @@ api.Qf = function Qf() {
                                                 style: { textAlign: "center" },
                                                 children: [
                                                   (0, api.h.jsx)("div", {
-                                                    style: { ...Yo, fontSize: 18 },
-                                                    children: api.Mi(p, m).toFixed(1),
+                                                    style: { ...Yo, fontSize: m === "spinacz" ? 14 : 18 },
+                                                    children:
+                                                      m === "spinacz" ? "4 kaf." : api.Mi(p, m).toFixed(1),
                                                   }),
                                                   (0, api.h.jsx)("div", {
                                                     style: { fontSize: 10, color: E.faint },
-                                                    children: "obra\u017C.",
+                                                    children: m === "spinacz" ? "zasi\u0119g" : "obra\u017C.",
                                                   }),
                                                 ],
                                               }),

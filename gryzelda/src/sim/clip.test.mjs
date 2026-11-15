@@ -12,7 +12,7 @@ import "./interact.js";
 import "../player/build.js";
 import "../sim/combat.js";
 import "../sim/tick.js";
-import { decideClip, rayHook, scarfAbsorb, openMost, facing, clipBlockedByPuzzle } from "./clip.js";
+import { decideClip, rayHook, scarfAbsorb, openMost, facing, clipBlockedByPuzzle, reachesWithoutFord } from "./clip.js";
 
 api.initData();
 
@@ -123,11 +123,11 @@ test("combat actually skips damage on the wool scarf", () => {
   assert.equal(e.hp, 6);
 });
 
-test("fifteen hooks, eight of them are rewards, none missing", () => {
+test("fifteen hooks, seven of them are rewards, none missing", () => {
   assert.deepEqual(api.clipMiss, []);
   assert.equal(api.clips.length, 15);
   let rewards = api.clips.filter((h) => h.reward !== "coin");
-  assert.equal(rewards.length, 8);
+  assert.equal(rewards.length, 7);
   for (let h of api.clips) {
     let tile = api.qe[h.z].t[h.y][h.x];
     assert.notEqual(tile, "#");
@@ -147,49 +147,59 @@ test("hooks stay off doors", () => {
   }
 });
 
-test("the river bridge is one row and stays shut until Kamila stamps it", () => {
-  let row = api.qe[1].t[12];
-  assert.equal(row[30], "w");
-  assert.equal(row[32], "w");
-  assert.equal(row[29], ".");
-  assert.equal(row[33], ".");
-  assert.equal(api.qe[1].t[8][31], "=");
+test("both footbridges are gone and only Kamila's row opens", () => {
+  for (let y = 0; y < api.qe[1].h; y++)
+    for (let x = 30; x <= 32; x++) assert.equal(api.qe[1].t[y][x], "w", y + "," + x);
+  for (let y of [8, 9, 23, 24]) assert.equal(api.qe[1].t[y][31], "w");
+  assert.equal(api.qe[1].t[12][26], ".");
+  assert.equal(api.qe[1].t[12][29], ".");
+  assert.equal(api.qe[1].t[12][33], ".");
   let copy = api.qe[1].t.map((r) => r.slice());
   assert.equal(openMost(api.qe[1]), true);
   assert.equal(api.qe[1].t[12][30], ".");
   assert.equal(api.qe[1].t[12][31], ".");
   assert.equal(api.qe[1].t[12][32], ".");
-  assert.equal(api.qe[1].t[8][31], "=");
+  assert.equal(api.qe[1].t[8][31], "w");
+  assert.equal(api.qe[1].t[23][31], "w");
   assert.equal(api.qe[1].t[11][30], copy[11][30]);
   assert.equal(api.qe[1].t[13][30], copy[13][30]);
   api.qe[1].t[12][30] = "w";
-  api.qe[1].t[12][31] = copy[12][31];
+  api.qe[1].t[12][31] = "w";
   api.qe[1].t[12][32] = "w";
 });
 
 test("quest items sit on the hook and old quests are untouched", () => {
-  let most = api.clipById("most"),
-    kam = api.Qi.find((q) => q.id === "kamMost"),
+  let kam = api.Qi.find((q) => q.id === "kamMost"),
     spin = api.Qi.find((q) => q.id === "spin1"),
     rys = api.Qi.find((q) => q.id === "rys1"),
     kam1 = api.Qi.find((q) => q.id === "kam1");
-  assert.equal(kam.steps[0].tx, most.x);
-  assert.equal(kam.steps[0].ty, most.y);
-  assert.equal(kam.after, "kam1");
+  assert.equal(kam.steps[1].tx, 26);
+  assert.equal(kam.steps[1].ty, 12);
+  assert.ok(kam.steps[1].tx < 30);
+  assert.equal(kam.after, undefined);
+  assert.equal(kam1.after, "kamMost");
+  assert.equal(api.Hp({ f: {} }, kam), true);
+  assert.equal(api.Hp({ f: {} }, kam1), false);
   assert.equal(spin.after, "rys1");
   assert.equal(rys.steps.length, 2);
   assert.equal(kam1.steps[0].tx, 58);
   assert.equal(api.Qi.filter((q) => q.id === "rys1").length, 1);
+  assert.equal(api.jn.spinacz.name, "Spinacz");
+  assert.ok(api.Cf.includes("spinacz"));
+  assert.equal(reachesWithoutFord(0, 2), false);
+  assert.equal(reachesWithoutFord(0, 9), true);
 });
 
 test("spinacz is not granted until Wanda finishes, and the scarf needs the ram", () => {
-  let e = { f: {}, coins: 0, pts: 0, lvl: 1, xp: 0, st: { vit: 1, str: 1, dex: 1, mnd: 1 }, spec: "", bonusHp: 0, sq: [] };
+  let e = { f: {}, coins: 0, pts: 0, lvl: 1, xp: 0, st: { vit: 1, str: 1, dex: 1, mnd: 1 }, spec: "", bonusHp: 0, sq: [], weapons: ["miecz"], weapon: "miecz" };
   let spin = api.Qi.find((q) => q.id === "spin1");
   assert.equal(api.Hp(e, spin), false);
   e.f["sqd:rys1"] = true;
   assert.equal(api.Hp(e, spin), true);
   api.onQuestDone(e, spin);
   assert.equal(e.f.spinacz, true);
+  assert.ok(e.weapons.includes("spinacz"));
+  assert.equal(e.weapon, "spinacz");
   let hel = api.Qi.find((q) => q.id === "helSzal");
   e.f["sqd:hel1"] = true;
   assert.equal(api.Hp(e, hel), false);
@@ -365,9 +375,13 @@ test("a loaded save reopens the bridge and lets Beczka out", () => {
   api.applyClipWorld({ f: { mostOpen: true, beczka: true } });
   assert.equal(api.qe[1].t[12][30], ".");
   assert.equal(api.qe[1].t[12][32], ".");
-  assert.equal(api.qe[1].t[8][31], "=");
+  assert.equal(api.qe[1].t[8][31], "w");
+  assert.equal(api.qe[1].t[23][31], "w");
   assert.equal(sheep.x1, 28);
   assert.equal(sheep.y0, 10);
+  let armed = { f: { spinacz: true }, weapons: ["miecz"], weapon: "miecz" };
+  api.applyClipWorld(armed);
+  assert.equal(armed.weapon, "spinacz");
   api.qe[1].t[12][30] = "w";
   api.qe[1].t[12][31] = "w";
   api.qe[1].t[12][32] = "w";

@@ -377,7 +377,9 @@ api.Mi = function Mi(e, t) {
   let n = e.st,
     i = 0;
   return (
-    t === "miecz" || t === "eskalacja"
+    t === "spinacz"
+      ? (i = 0)
+      : t === "miecz" || t === "eskalacja"
       ? (i = 1 + n.str * 0.55)
       : t === "zaglada"
         ? (i = (3 + n.str * 0.8) * 2.1)

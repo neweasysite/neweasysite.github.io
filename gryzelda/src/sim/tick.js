@@ -298,7 +298,7 @@ api.yh = function yh(e, t, n) {
     } else if (e.near && e.near.kind === "toggle") api.flipToggle(e, e.near.id);
     else if (!e.near) {
       let puzzle = api.clipBlockedByPuzzle ? api.clipBlockedByPuzzle(e) : e.blocks.length > 0;
-      puzzle ? api.$p(e) : api.clipUse && api.clipUse(e);
+      puzzle && api.$p(e);
     }
   if (
     (e.zone === 4 &&
@@ -343,6 +343,8 @@ api.yh = function yh(e, t, n) {
         C === "miecz" || C === "eskalacja" || C === "zaglada")
       )
         ((e.swing = C === "zaglada" ? 0.3 : 0.22), e.swingId++, api.G(e, "swing"));
+      else if (C === "spinacz")
+        ((e.swing = 0.18), e.swingId++, api.clipUse && api.clipUse(e));
       else if (C === "luk") {
         let S = api.Zi(e, 140);
         ((e.castT = 0.15),

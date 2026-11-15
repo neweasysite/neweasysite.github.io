@@ -71,8 +71,33 @@ export function openMost(zone) {
   return zone.t[12][30] === "." && zone.t[12][31] === "." && zone.t[12][32] === ".";
 }
 
+export function sealRiver(zone) {
+  if (!zone) return;
+  for (let y = 0; y < zone.h; y++) {
+    if (!zone.t[y]) continue;
+    if (y === 12 && zone.t[y][30] === "." && zone.t[y][31] === "." && zone.t[y][32] === ".") continue;
+    for (let x = 30; x <= 32; x++) zone.t[y][x] = "w";
+  }
+}
+
+export function reachesWithoutFord(from, to) {
+  let seen = new Set(),
+    q = [from];
+  while (q.length) {
+    let id = q.pop();
+    if (seen.has(id)) continue;
+    seen.add(id);
+    let zone = (api.qe || []).find((n) => n.id === id);
+    if (!zone) continue;
+    for (let ex of zone.exits || []) {
+      if ((id === 1 && ex.to === 2) || (id === 2 && ex.to === 1)) continue;
+      seen.has(ex.to) || q.push(ex.to);
+    }
+  }
+  return seen.has(to);
+}
+
 const REWARDS = {
-  most: "protocol",
   belka: "beczka",
   slupek: "wezwanie",
   polka: "map",
@@ -180,8 +205,10 @@ api.placeClips = function placeClips() {
     });
   }
   let meadow = api.qe[1];
+  meadow.t[12][26] = ".";
   meadow.t[12][29] = ".";
   meadow.t[12][33] = ".";
+  sealRiver(meadow);
   let lie = api.qe[11];
   api.clipLie = { z: 11, x: 22, y: 20 };
   lie && clearStand(11, 22, 20);
@@ -196,13 +223,18 @@ api.placeClips = function placeClips() {
     let item = api.qe[hook.z].items.find((n) => n.id === quest + ":" + step);
     item && ((item.tx = hook.x), (item.ty = hook.y));
   };
-  move("kamMost", 0, "most");
   move("falsz1", 0, "slupek");
 };
 
 api.clipById = function clipById(id) {
   return (api.clips || []).find((h) => h.id === id);
 };
+
+function grantSpinacz(e) {
+  e.f.spinacz = !0;
+  if (!Array.isArray(e.weapons)) return;
+  e.weapons.indexOf("spinacz") < 0 && (e.weapons.push("spinacz"), (e.weapon = "spinacz"));
+}
 
 function say(e, text) {
   api.ne && api.ne(e, text, 3.2);
@@ -354,7 +386,7 @@ api.clipPaint = function clipPaint(ctx, zone) {
 api.onQuestDone = function onQuestDone(e, t) {
   if (!t) return;
   if (t.id === "spin1") {
-    e.f.spinacz = !0;
+    grantSpinacz(e);
     e.dirty = !0;
   } else if (t.id === "kamMost") {
     openMost(api.qe[1]);
@@ -373,6 +405,14 @@ api.onQuestDone = function onQuestDone(e, t) {
 
 api.applyClipWorld = function applyClipWorld(e) {
   if (!e || !e.f) return;
-  (e.f.mostOpen || e.f["sqd:kamMost"]) && openMost(api.qe[1]);
+  (e.f.spinacz || e.f["sqd:spin1"]) && grantSpinacz(e);
   e.f.beczka && expandBeczka();
+  if (e.f.mostOpen || e.f["sqd:kamMost"]) {
+    openMost(api.qe[1]);
+    return;
+  }
+  if (e.cp && !reachesWithoutFord(0, e.cp.zone) && api.Qn) {
+    e.cp = { zone: 0, x: api.Y(api.Qn.x), y: api.Y(api.Qn.y) };
+    e.f._bridgeBack = !0;
+  }
 };
