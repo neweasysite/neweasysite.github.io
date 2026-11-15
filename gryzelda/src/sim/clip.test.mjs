@@ -532,6 +532,11 @@ test("sheep die and run, fighters hit back, house doors sit in the middle", () =
   assert.equal(e.np.filip.x, fx);
   assert.ok(e.np.filip.shy > 0);
   assert.notEqual(e.np.filip.gx, fx);
+  api.slideNpc(e, api.Cn(e), "filip", e.np.filip, 0.05);
+  let face = e.np.filip.fx + ":" + e.np.filip.fy;
+  assert.ok(e.np.filip.fx === 0 || e.np.filip.fy === 0);
+  api.slideNpc(e, api.Cn(e), "filip", e.np.filip, 0.05);
+  assert.equal(e.np.filip.fx + ":" + e.np.filip.fy, face);
   e.np.bogdan.x = 90;
   e.np.bogdan.y = 80;
   e.np.bogdan.atk = 0;

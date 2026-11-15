@@ -90,9 +90,15 @@ api.flockTick = function flockTick(e, dt) {
     }
     let dx = s.x - e.px,
       dy = s.y - e.py;
-    Math.hypot(dx, dy) < 18 &&
-      !(e.god && e.god.veil) &&
-      ((s.gx = s.x + Math.sign(dx || 1) * 16), (s.gy = s.y + Math.sign(dy) * 16));
+    if (Math.hypot(dx, dy) < 22 && !(e.god && e.god.veil) && s.flee <= 0) {
+      s.flee = 0.8;
+      s.wait = 0;
+      if (Math.abs(dx) >= Math.abs(dy)) {
+        ((s.gx = s.x + Math.sign(dx || 1) * 24), (s.gy = s.y), (s.fx = Math.sign(dx || 1)), (s.fy = 0), (s.face = s.fx));
+      } else {
+        ((s.gx = s.x), (s.gy = s.y + Math.sign(dy || 1) * 24), (s.fx = 0), (s.fy = Math.sign(dy || 1)));
+      }
+    }
     let cx = s.gx - s.x,
       cy = s.gy - s.y;
     if (Math.abs(cx) < 0.4 && Math.abs(cy) < 0.4) {
@@ -119,10 +125,12 @@ api.flockTick = function flockTick(e, dt) {
     ((s.x = nx),
       (s.y = ny),
       (s.moving = !0),
-      (s.walk += dt),
-      mx
-        ? ((s.fx = Math.sign(mx)), (s.fy = 0), (s.face = s.fx))
-        : ((s.fx = 0), (s.fy = Math.sign(my) || 1)));
+      (s.walk += dt * 0.55),
+      s.flee > 0
+        ? 0
+        : mx
+          ? ((s.fx = Math.sign(mx)), (s.fy = 0), (s.face = s.fx))
+          : ((s.fx = 0), (s.fy = Math.sign(my) || 1)));
   }
 };
 
@@ -249,23 +257,27 @@ const NPC_LOSS = {
 };
 
 api.slideNpc = function slideNpc(e, zone, id, a, dt) {
+  if (!a.axed) {
+    let cx0 = a.gx - a.x,
+      cy0 = a.gy - a.y;
+    Math.abs(cx0) >= Math.abs(cy0)
+      ? ((a.gy = a.y), (a.fx = Math.sign(cx0) || a.fx || 1), (a.fy = 0))
+      : ((a.gx = a.x), (a.fx = 0), (a.fy = Math.sign(cy0) || 1));
+    a.axed = 1;
+  }
   a.shy -= dt;
   let cx = a.gx - a.x,
     cy = a.gy - a.y;
   if (Math.hypot(cx, cy) < 0.5 || a.shy <= 0) {
-    ((a.shy = 0), (a.moving = !1), (a.wait = 0.8));
+    ((a.shy = 0), (a.axed = 0), (a.moving = !1), (a.wait = 0.8));
     return;
   }
   let sp = 28 * dt,
-    mx = Math.abs(cx) >= Math.abs(cy) ? Math.sign(cx) * Math.min(sp, Math.abs(cx)) : 0,
-    my = mx ? 0 : Math.sign(cy) * Math.min(sp, Math.abs(cy));
+    mx = a.fx ? Math.sign(a.fx) * Math.min(sp, Math.abs(cx)) : 0,
+    my = a.fy ? Math.sign(a.fy) * Math.min(sp, Math.abs(cy)) : 0;
   api.Ap(e, zone, a.x + mx, a.y + my, id)
-    ? ((a.x += mx),
-      (a.y += my),
-      (a.moving = !0),
-      (a.walk += dt),
-      mx ? ((a.fx = Math.sign(mx)), (a.fy = 0)) : ((a.fx = 0), (a.fy = Math.sign(my) || 1)))
-    : ((a.shy = 0), (a.moving = !1));
+    ? ((a.x += mx), (a.y += my), (a.moving = !0), (a.walk += dt * 0.45))
+    : ((a.shy = 0), (a.axed = 0), (a.moving = !1));
 };
 
 api.npcYield = function npcYield(e, id, n) {
@@ -292,16 +304,26 @@ api.duelStep = function duelStep(e, id, a, dt) {
   let dx = e.px - a.x,
     dy = e.py - a.y,
     dist = Math.hypot(dx, dy) || 1;
-  (Math.abs(dx) > Math.abs(dy)
-    ? ((a.fx = Math.sign(dx) || 1), (a.fy = 0))
-    : ((a.fx = 0), (a.fy = Math.sign(dy) || 1)));
+  if ((a.faceT || 0) > 0) a.faceT -= dt;
+  else if (!a.fx && !a.fy) {
+    Math.abs(dx) >= Math.abs(dy)
+      ? ((a.fx = Math.sign(dx) || 1), (a.fy = 0))
+      : ((a.fx = 0), (a.fy = Math.sign(dy) || 1));
+    a.faceT = 0.35;
+  } else if (Math.abs(Math.abs(dx) - Math.abs(dy)) > 10) {
+    let wantX = Math.abs(dx) >= Math.abs(dy);
+    wantX
+      ? ((a.fx = Math.sign(dx) || 1), (a.fy = 0))
+      : ((a.fx = 0), (a.fy = Math.sign(dy) || 1));
+    a.faceT = 0.45;
+  }
   if (dist > 20) {
     let sp = 26 * dt,
-      mx = Math.abs(dx) >= Math.abs(dy) ? (dx / dist) * sp : 0,
-      my = mx ? 0 : (dy / dist) * sp,
+      mx = a.fx ? Math.sign(a.fx) * sp : 0,
+      my = a.fy ? Math.sign(a.fy) * sp : 0,
       zone = api.Cn(e);
     api.Ap(e, zone, a.x + mx, a.y + my, id)
-      ? ((a.x += mx), (a.y += my), (a.moving = !0), (a.walk += dt))
+      ? ((a.x += mx), (a.y += my), (a.moving = !0), (a.walk += dt * 0.45))
       : (a.moving = !1);
     return;
   }
@@ -336,10 +358,19 @@ api.pokeWorld = function pokeWorld(e, x, y, rad, dmg, token, fx, fy) {
     s.flee = 1.6;
     s.wait = 0;
     let ax = Math.sign(s.x - e.px) || -fx || 1,
-      ay = Math.sign(s.y - e.py) || -fy || 0,
-      tx = Math.max(s.x0, Math.min(s.x1, Math.floor(s.x / api.T) + ax * 3)),
-      ty = Math.max(s.y0, Math.min(s.y1, Math.floor(s.y / api.T) + ay * 2));
-    ((s.gx = api.Y(tx)), (s.gy = api.Y(ty)));
+      ay = Math.sign(s.y - e.py) || -fy || 0;
+    if (Math.abs(ax) >= Math.abs(ay)) {
+      s.gx = api.Y(Math.max(s.x0, Math.min(s.x1, Math.floor(s.x / api.T) + ax * 3)));
+      s.gy = s.y;
+      s.fx = ax;
+      s.fy = 0;
+      s.face = ax;
+    } else {
+      s.gx = s.x;
+      s.gy = api.Y(Math.max(s.y0, Math.min(s.y1, Math.floor(s.y / api.T) + ay * 2)));
+      s.fx = 0;
+      s.fy = ay || 1;
+    }
     if (s.hp <= 0) {
       ((s.dead = !0), (s.fall = 0.45));
       e.coins = (e.coins || 0) + (s.dark ? 3 : 1);
