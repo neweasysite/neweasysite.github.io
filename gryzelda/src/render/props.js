@@ -450,7 +450,18 @@ api.Si = function Si(e, t, n, i, a) {
                   api.o(e, "#8b5a2b", n - 5, i - 6, 1, 4),
                   api.o(e, "#8b5a2b", n + 4, i - 6, 1, 4),
                   api.o(e, "#8b5a2b", n - 5, i - 6, 10, 1))
-                : r === "okladka"
+                : r === "deski"
+                  ? (api.o(e, s, n - 8, i - 6, 16, 12),
+                    api.o(e, "#5a3a1a", n - 7, i - 5, 14, 3),
+                    api.o(e, "#c4945a", n - 7, i - 4, 14, 1),
+                    api.o(e, "#5a3a1a", n - 7, i - 1, 14, 3),
+                    api.o(e, "#a8743c", n - 7, i, 14, 1),
+                    api.o(e, "#5a3a1a", n - 7, i + 3, 14, 3),
+                    api.o(e, "#e0b56a", n - 7, i + 3, 14, 1),
+                    api.o(e, "#d8d8e0", n - 4, i - 4, 1, 1),
+                    api.o(e, "#d8d8e0", n + 3, i, 1, 1),
+                    api.o(e, "#d8d8e0", n - 1, i + 4, 1, 1))
+                  : r === "okladka"
                   ? (api.o(e, s, n - 6, i - 5, 12, 10),
                     api.o(e, "#c0392b", n - 5, i - 4, 10, 8),
                     api.o(e, "#8a2a20", n - 5, i - 4, 2, 8),

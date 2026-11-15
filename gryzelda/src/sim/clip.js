@@ -65,17 +65,21 @@ export function scarfAbsorb(e) {
 
 api.scarfAbsorb = scarfAbsorb;
 
+export const BRIDGE_ROWS = [8, 9];
+
 export function openMost(zone) {
-  if (!zone || !zone.t[12]) return !1;
-  for (let x = 30; x <= 32; x++) zone.t[12][x] = ".";
-  return zone.t[12][30] === "." && zone.t[12][31] === "." && zone.t[12][32] === ".";
+  if (!zone) return !1;
+  for (let y of BRIDGE_ROWS) {
+    if (!zone.t[y]) return !1;
+    for (let x = 30; x <= 32; x++) zone.t[y][x] = "=";
+  }
+  return BRIDGE_ROWS.every((y) => [30, 31, 32].every((x) => zone.t[y][x] === "="));
 }
 
 export function sealRiver(zone) {
   if (!zone) return;
   for (let y = 0; y < zone.h; y++) {
     if (!zone.t[y]) continue;
-    if (y === 12 && zone.t[y][30] === "." && zone.t[y][31] === "." && zone.t[y][32] === ".") continue;
     for (let x = 30; x <= 32; x++) zone.t[y][x] = "w";
   }
 }
@@ -105,10 +109,13 @@ const REWARDS = {
   nisza: "staples",
   zagroda: "scarf",
   gniazdo: "glut",
+  palE: "moor",
+  palW: "moor",
 };
 
 api.clipSpecs = [
-  { id: "most", z: 1, x: 33, y: 12, lock: !0 },
+  { id: "palE", z: 1, x: 33, y: 5, lock: !0 },
+  { id: "palW", z: 1, x: 29, y: 28, lock: !0 },
   { id: "belka", z: 1, x: 23, y: 16, lock: !0 },
   { id: "slupek", z: 9, x: 18, y: 14 },
   { id: "polka", z: 10, x: 18, y: 6 },
@@ -186,6 +193,23 @@ function snap(spec) {
 }
 
 api.placeClips = function placeClips() {
+  let meadow = api.qe[1];
+  sealRiver(meadow);
+  let shore = (x) => {
+    for (let y = 1; y < meadow.h - 1; y++) {
+      let tile = meadow.t[y][x];
+      if (tile === "t" || tile === "b" || tile === "r" || tile === "," || tile === "f")
+        meadow.t[y][x] = ".";
+    }
+  };
+  shore(28);
+  shore(29);
+  shore(33);
+  shore(34);
+  for (let y of BRIDGE_ROWS)
+    for (let x = 24; x <= 29; x++) meadow.t[y][x] !== "w" && (meadow.t[y][x] = ":");
+  for (let y of BRIDGE_ROWS)
+    for (let x = 33; x <= 42; x++) meadow.t[y][x] !== "w" && (meadow.t[y][x] = ":");
   api.clips = [];
   api.clipMiss = [];
   for (let spec of api.clipSpecs) {
@@ -204,11 +228,6 @@ api.placeClips = function placeClips() {
       reward: REWARDS[spec.id] || "coin",
     });
   }
-  let meadow = api.qe[1];
-  meadow.t[12][26] = ".";
-  meadow.t[12][29] = ".";
-  meadow.t[12][33] = ".";
-  sealRiver(meadow);
   let lie = api.qe[11];
   api.clipLie = { z: 11, x: 22, y: 20 };
   lie && clearStand(11, 22, 20);
@@ -259,6 +278,8 @@ api.clipArrive = function clipArrive(e, hook) {
   if (e.f["clip:" + hook.id]) return;
   e.f["clip:" + hook.id] = !0;
   e.dirty = !0;
+  if (hook.reward === "moor")
+    return say(e, "Pal cumowniczy. Spinacz trzyma. Mostu tu nie ma, rzeka płynie dalej.");
   if (hook.reward === "coin") {
     e.coins = (e.coins || 0) + 3;
     return say(e, "Za hakiem trzy grosze. Reszta to skrót.");
@@ -321,7 +342,7 @@ api.clipUse = function clipUse(e) {
   if (d.type === "wait" || d.type === "none") return !1;
   if (d.type === "hint")
     return (
-      say(e, "Za wysoko. Wanda w kuźni prostuje takie rzeczy."),
+      say(e, "Hak jest. Bez spinacza nie sięgniesz. Wanda w kuźni spina takie rzeczy."),
       (e.clipCd = 0.6),
       !0
     );
@@ -378,6 +399,13 @@ api.clipPaint = function clipPaint(ctx, zone) {
     if (h.z !== zone.id) continue;
     let x = h.x * api.T,
       y = h.y * api.T;
+    if (h.id === "palE" || h.id === "palW") {
+      api.o(ctx, "#3a2412", x + 6, y + 1, 4, 14);
+      api.o(ctx, "#a8743c", x + 7, y + 2, 2, 12);
+      api.o(ctx, "#d8d8e0", x + 3, y + 3, 10, 2);
+      api.o(ctx, "#8a8fa0", x + 4, y + 3, 8, 1);
+      continue;
+    }
     api.o(ctx, "#c4845a", x + 7, y + 2, 2, 8);
     api.o(ctx, "#f4efe6", x + 5, y + 2, 6, 2);
   }
@@ -407,12 +435,27 @@ api.applyClipWorld = function applyClipWorld(e) {
   if (!e || !e.f) return;
   (e.f.spinacz || e.f["sqd:spin1"]) && grantSpinacz(e);
   e.f.beczka && expandBeczka();
-  if (e.f.mostOpen || e.f["sqd:kamMost"]) {
-    openMost(api.qe[1]);
-    return;
+  if (e.f["sq:kamMost"] && !e.f["sqd:kamMost"] && e.f["sqs:kamMost"]) {
+    e.f["sqs:kamMost"] = 0;
+    e.f._plankReset = !0;
   }
-  if (e.cp && !reachesWithoutFord(0, e.cp.zone) && api.Qn) {
-    e.cp = { zone: 0, x: api.Y(api.Qn.x), y: api.Y(api.Qn.y) };
-    e.f._bridgeBack = !0;
+  if (e.f.mostOpen || e.f["sqd:kamMost"]) openMost(api.qe[1]);
+  else {
+    if (e.cp && !reachesWithoutFord(0, e.cp.zone) && api.Qn) {
+      e.cp = { zone: 0, x: api.Y(api.Qn.x), y: api.Y(api.Qn.y) };
+      e.f._bridgeBack = !0;
+    }
+    if (e.cp && e.cp.zone === 1 && !e.f.spinacz) {
+      let tx = Math.floor(e.cp.x / api.T);
+      tx >= 33 &&
+        ((e.cp = { zone: 0, x: api.Y(api.Qn.x), y: api.Y(api.Qn.y) }), (e.f._bridgeBack = !0));
+    }
+  }
+  if (e.cp && e.cp.zone === 1 && api.qe[1]) {
+    let tx = Math.floor(e.cp.x / api.T),
+      ty = Math.floor(e.cp.y / api.T),
+      tile = api.qe[1].t[ty] && api.qe[1].t[ty][tx];
+    tile === "w" &&
+      ((e.cp = { zone: 1, x: api.Y(27), y: api.Y(8) }), (e.f._bridgeBack = !0));
   }
 };

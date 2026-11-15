@@ -1399,9 +1399,9 @@ api.Qf = function Qf() {
               "Dobrze ci\u0119 widzie\u0107. Serio. Nie tak serio jak termin przetargu, ale prawie.",
               "Pytanie kontrolne: jad\u0142a\u015B co\u015B dzi\u015B? Przygody na pusty \u017Co\u0142\u0105dek to niegospodarno\u015B\u0107.",
               "M\xF3w kr\xF3tko i na temat. Dobra, \u017Cartuj\u0119, opowiadaj wszystko, i tak czekam na podpis.",
-              "Droga do Lasu jest w planie wieloletnim. Na razie chod\u017A po krzakach. To te\u017C \u015Bcie\u017Cka, tylko nieuko\u0144czona.",
+              "Jak skończę ten stos, idę po kawę. Jak skończę kawę, idę po następny stos.",
               "Kosztorys? Kosztorys jest pi\u0119kny. Rzeczywisto\u015B\u0107 si\u0119 do niego jeszcze nie dostosowa\u0142a.",
-              "Gdyby smoki sk\u0142ada\u0142y oferty w terminie, mieliby\u015Bmy ju\u017C most na \u0141\u0105ce. A tak mamy k\u0142adk\u0119 i nadziej\u0119.",
+              "Smoki spóźniają się z ofertami. Ja spóźniam się z urlopem. Remis.",
             ],
             re = p.f["tk:kamila"] || 0,
             We = re + Math.floor(p.time / 20);
@@ -1410,6 +1410,12 @@ api.Qf = function Qf() {
               ? "Dzi\u0119ki tobie mamy teczk\u0119, protok\xF3\u0142 i dofinansowanie. Dyrekcja pyta, czy nie chcesz etatu. Uciekaj, p\xF3ki mo\u017Cesz."
               : $[We % $.length],
           ),
+            p.f["sqd:kamMost"] &&
+              !p.f["sq:kam1"] &&
+              K("Deski Zdzicha leżą na drodze, przez wodę. W papierach mostu nadal nie ma."),
+            p.f["sq:kam1"] &&
+              !p.f["sqd:kam1"] &&
+              K("Teczki przy mnie nie ma. Sam wiatr ją wziął. Przynieś, to pogadamy o przetargu."),
             K(
               "Parz\u0119 te\u017C kaw\u0119 urz\u0119dow\u0105. Dzia\u0142a szybciej ni\u017C obieg dokument\xF3w, a jak masz grosze, naucz\u0119 ci\u0119 parzy\u0107 j\u0105 d\u0142u\u017Cej.",
             ),

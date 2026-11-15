@@ -117,7 +117,7 @@ api.initData = function initData() {
       after: "kam2",
       ask: "Mam jeszcze si\u0142\u0119 na papierologi\u0119",
       offer:
-        "Sk\u0142adam wniosek o dofinansowanie mostu na \u0141\u0105ce. Potrzebuj\u0119 trzech za\u0142\u0105cznik\xF3w: opinii Naczelnika Piotra, harmonogramu od zegarmistrza Horacego z wie\u017Cy i opinii \u015Brodowiskowej od Pustelnika Mirka z Bagien. Potem komisja zada pytania kontrolne, a ja mam ju\u017C za ma\u0142o kawy we krwi.",
+        "Deski Zdzicha stoją na drodze, ale w ewidencji mostu nie ma. Składam wniosek, żeby samowola stała się inwestycją. Potrzebuję trzech załączników: opinii Naczelnika Piotra, harmonogramu od zegarmistrza Horacego z wieży i opinii środowiskowej od Pustelnika Mirka z Bagien. Potem komisja zada pytania kontrolne, a ja mam już za mało kawy we krwi.",
       accept:
         "Kolejno\u015B\u0107 dowolna, byle wszystkie trzy. Mirek mieszka na Po\u0142udniowych Bagnach i rozmawia z lud\u017Ami raz w roku. Masz szcz\u0119\u015Bcie, ten rok jeszcze trwa.",
       prog: "Za\u0142\u0105czniki: {s}/3. Komisja czeka. Ja czekam na kaw\u0119.",
@@ -145,7 +145,7 @@ api.initData = function initData() {
       wrong:
         "Komisja kr\u0119ci nosem. Spr\xF3bujmy jeszcze raz od pocz\u0105tku, tym razem z kaw\u0105.",
       turn: "Mam za\u0142\u0105czniki, czas na komisj\u0119",
-      done: "Wniosek przyj\u0119ty! Dofinansowanie przyznane, most powstanie w nast\u0119pnej perspektywie finansowej. Masz 90 groszy i punkt. Awansowa\u0142a\u015B na moj\u0105 ulubion\u0105 petentk\u0119.",
+      done: "Wniosek przyjęty. Te trzy deski teraz istnieją też na papierze. Prawdziwy most — w następnej perspektywie. Masz 90 groszy i punkt. Awansowałaś na moją ulubioną petentkę.",
       reward: { c: 90, xp: 90, p: 1 },
       steps: [
         {
@@ -228,7 +228,7 @@ api.initData = function initData() {
       gate: ["undead"],
       ask: "Co\u015B nowego w referacie?",
       offer:
-        "Firma, kt\xF3ra mia\u0142a budowa\u0107 most, wzi\u0119\u0142a zaliczk\u0119 i znikn\u0119\u0142a. Kurier Darek m\xF3wi, \u017Ce polecone do nich wracaj\u0105 z Krainy Nieumar\u0142ego Supportu z dopiskiem \u201Eadresat nieumar\u0142y\u201D. Odzyskaj zaliczk\u0119. Albo chocia\u017C faktur\u0119. Albo chocia\u017C d\u0142ugopis.",
+        "Firma, która miała zamienić deski Zdzicha na prawdziwy most, wzięła zaliczkę i zniknęła. Kurier Darek mówi, że polecone do nich wracają z Krainy Nieumarłego Supportu z dopiskiem „adresat nieumarły”. Odzyskaj zaliczkę. Albo chociaż fakturę. Albo chociaż długopis.",
       accept:
         "Konkretnie: koperta z zaliczk\u0105, \u017Cadnych aneks\xF3w, \u017Cadnych \u201Eto ju\u017C na dniach\u201D. Tak, wiem, \u017Ce idziesz do nieumar\u0142ych. Zaliczka sama si\u0119 nie rozliczy.",
       prog: "Zaliczka dalej w za\u015Bwiatach. Ksi\u0119gowa dalej patrzy na mnie tak, jakbym to ja j\u0105 wyda\u0142a.",
@@ -279,7 +279,7 @@ api.initData = function initData() {
       name: "Odbi\xF3r ko\u0144cowy",
       giver: "kamila",
       after: "kam5",
-      ask: "Jak tam most?",
+      ask: "Co dalej po tej zaliczce?",
       offer:
         "Most ma nowego wykonawc\u0119, teraz odbi\xF3r ko\u0144cowy. Komisja przys\u0142a\u0142a Rzeczoznawc\u0119 i Inspektora Nadzoru. Problem: obaj pomylili teren budowy z poligonem i atakuj\u0105 wszystko, co ma kask. I wszystko, co go nie ma. Rzeczoznawca szar\u017Cuje po Zachodnich Polach, Inspektor okopa\u0142 si\u0119 na Bagnach SLA.",
       accept:
@@ -488,7 +488,7 @@ api.initData = function initData() {
       giver: "filip",
       after: "fil2",
       gate: ["seal"],
-      ask: "Masz dla mnie jak\u0105\u015B zagadk\u0119?",
+      ask: "A co teraz, jak piłka wróciła?",
       offer:
         "Mia\u0142em! Ca\u0142a ksi\u0119ga zagadek taty. Ale tata zgubi\u0142 j\u0105 w Ruinach Kolejki, jak ucieka\u0142 przed zg\u0142oszeniem, kt\xF3re go goni\u0142o. Przyniesiesz? Wtedy zadam ci trzy najtrudniejsze i dostaniesz moje najcenniejsze grosze.",
       accept:
@@ -914,7 +914,7 @@ api.initData = function initData() {
       name: "Z\u0142om na kowad\u0142o",
       giver: "wanda",
       gate: ["seal"],
-      ask: "Potrzebuje pani czego\u015B z Ruin?",
+      ask: "Potrzebuje pani czegoś na kowadło?",
       offer:
         "Miecz t\u0119pi si\u0119 od samych formularzy. Przynie\u015B trzy od\u0142amki pancerza pluskiew spamu z holu Ruin Kolejki. Zrobi\u0119 z tego co\u015B, co nie p\u0119ka przy pierwszym tickecie.",
       accept:
@@ -1018,7 +1018,7 @@ api.initData = function initData() {
       name: "Baran za płotem",
       giver: "wicek",
       after: "pas1",
-      ask: "A ten baran, co nie wraca do kolejki?",
+      ask: "Ma pan jeszcze jakąś owcę poza spisem?",
       offer:
         "Support — tak, ten od Oli — przeskoczył płot i poszedł w prawo, na pastwisko. Zostawił kłak za kratą w kamiennej zagrodzie. Hela wie, które kamienie gdzie. Bez kłaka nie zamknę sprawy barana.",
       accept:
@@ -1078,7 +1078,7 @@ api.initData = function initData() {
       name: "Kłak na czubku",
       giver: "ola",
       after: "ola1",
-      ask: "Beczka znowu coś zwinęła?",
+      ask: "Co u Beczki?",
       offer:
         "Zostawiła kłak na czubku młyna. Schody są w środku, na samym środku, nie z boku. Wejdź na strych, potem jeszcze wyżej. Kłak leży przy beczce, jakby sam chciał być liczonym.",
       accept: "Nie spadnij. Młyn liczy piętra lepiej niż ja owce.",
@@ -1104,9 +1104,9 @@ api.initData = function initData() {
       name: "Urządzenie transportowe",
       giver: "wanda",
       after: "rys1",
-      ask: "Haczyk już prosty. A ten spinacz?",
+      ask: "Haczyk już prosty. Ma pani jeszcze robotę?",
       offer:
-        "Most Kamili i tak jest w remoncie, Darek tamtędy nie przejdzie. Z haczyka i spinacza zrobię broń do haków: gwoździe, lampy, belki. Wody to nie wypije. Spinacz leży w Depocie Zagubionych Paczek, na półce, nie za kratą.",
+        "Haczyk jest prosty, a w Depocie leży spinacz archiwalny. Spię je w broń do haków: gwoździe, lampy, pale przy wodzie. Wody to nie wypije. Spinacz leży na półce, nie za kratą.",
       accept: "Duży, zardzewiały, z gumką. Nie kuję z tego miecza.",
       prog: "Bez spinacza jestem kowalką, nie urzędem.",
       turn: "Spiąć haczyk z spinaczem",
@@ -1127,34 +1127,35 @@ api.initData = function initData() {
     },
     {
       id: "kamMost",
-      name: "Odbudowa mostu",
-      giver: "kamila",
-      ask: "Most na łące stoi?",
+      name: "Trzy deski",
+      giver: "zdzich",
+      ask: "Czemu pan tak patrzy w stronę łąki?",
       offer:
-        "Nie stoi. Obie kładki zgniły, woda jest wodą. Zdzich wie, gdzie leżą trzy deski, po tej stronie rzeki. Przynieś je, ostempluję odbiór i otworzę przejście. Dopiero wtedy teczka za wodą ma sens.",
-      accept: "Deski są na Łące, zachodni brzeg, rząd dwunasty, zanim zacznie się woda. Nie za nią.",
-      prog: "Bez desek most jest tylko kreską w piśmie.",
-      turn: "Oddaj deski mostu",
-      done: "Stempel. Trzy kafelki na dwunastym rzędzie są mostem. Teraz możesz iść za rzekę. Teczka tam czeka, jak wiatr nie zmienił zdania.",
+        "Bo droga się tam urywa. Kładki zgniły, została rzeka. Wyciąłem trzy deski i zostawiłem je na drodze, po tej stronie, przy samym brzegu. Widać je ze ścieżki. Zanieś je Kamili. Ja niosę łopatę, ona niesie pieczątkę.",
+      accept:
+        "Na drodze, tam gdzie ścieżka dochodzi do wody. Nie w krzakach. Jak Kamila podpisze, wróć do mnie. Deski kładę ja, nie ona.",
+      prog: "Deski leżą na drodze albo Kamila jeszcze nie stempluje.",
+      turn: "Kamila podpisała odbiór",
+      done: "Podpis jest. Kładę trzy deski tam, gdzie droga urywała się na wodzie. Możesz iść. To nie jest most docelowy. To trzy deski.",
       reward: { c: 40, xp: 45 },
       steps: [
         {
-          t: "talk",
-          to: "zdzich",
-          ask: "Gdzie deski na most Kamili?",
-          hint: "Pan Zdzisiek, Wioska, droga na zachód od stawu",
-          txt: "Deski zostawiłem na łące, przy brzegu, rząd dwunasty, zanim woda. Sam nie niosę. Most jest niesprawny, a Darek też tamtędy nie przejdzie. Jakby był sprawny, tobym niósł.",
-          ok: "Wezmę je z brzegu",
-        },
-        {
           t: "item",
           z: 1,
-          tx: 26,
-          ty: 12,
-          name: "Trzy deski mostu",
-          ic: "okladka",
-          hint: "Łąka Czekania: zachodni brzeg rzeki, rząd 12, przed wodą",
-          fin: "Deski, trochę mokre na końcach. Kamila chce je ostemplować, nie polakierować.",
+          tx: 27,
+          ty: 8,
+          name: "Trzy deski",
+          ic: "deski",
+          hint: "Łąka Czekania: droga do rzeki, na ścieżce, zachodni brzeg",
+          fin: "Deski, na drodze, nie za drzewem. Kamila ma je tylko podpisać.",
+        },
+        {
+          t: "talk",
+          to: "kamila",
+          ask: "Zdzich przysłał deski. Podpisze pani odbiór?",
+          hint: "Pani Kamila, Wioska",
+          txt: "Trzy deski, jeden formularz. Podpisuję odbiór tymczasowy. Na wodę kładzie je Zdzich, na drodze, tam gdzie ścieżka. Reszta rzeki zostaje wodą. Wracaj do niego.",
+          ok: "Wracam do Zdzicha",
         },
       ],
     },
@@ -1163,7 +1164,7 @@ api.initData = function initData() {
       name: "Wezwanie na słupek",
       giver: "staszek",
       after: "sta1",
-      ask: "Na słupku wisi coś do mnie?",
+      ask: "Coś jeszcze straszy na polu?",
       offer:
         "Ticket, którego z dołu nie chciałem czytać. Jak go zdejmiesz, zanieś do Zbyszka. On fałszuje tak, że papier ucieka.",
       accept: "Słupek jest na Polach. Hak, nie drabinę.",
@@ -1198,7 +1199,7 @@ api.initData = function initData() {
       giver: "hela",
       after: "hel1",
       gate: ["baranHook"],
-      ask: "Baran zostawił kłak na murze.",
+      ask: "Znalazłam kłak na murze.",
       offer:
         "Support przeskakuje, kłak zostaje. Przyniosłaś go, to utkaję szalik. Pierwsze uderzenie po kapliczce spłynie. Drugie już nie.",
       accept: "Nie pierze się. Owce by się obraziły.",
@@ -1228,7 +1229,8 @@ api.initData = function initData() {
       zdzich: [
         "Dzie\u0144 dobry! To nie jest dziura w drodze, tylko inwestycja w toku.",
         "Pracuj\u0119 tu od rana. G\u0142\xF3wnie trzymam \u0142opat\u0119, \u017Ceby nie uciek\u0142a.",
-        "Pani Kamila m\xF3wi, \u017Ce remont sko\u0144czy si\u0119 w terminie. Nie powiedzia\u0142a w kt\xF3rym.",
+        "Za wsią droga dochodzi do rzeki i staje. Dalej sam nie niosę.",
+        "Pani Kamila m\xF3wi, \u017Ce papiery s\u0105 w terminie. Nie powiedzia\u0142a w kt\xF3rym.",
       ],
       grazyna: [
         "S\u0142ysza\u0142a\u015B? Mietek dolewa wody do gulaszu. A Bogdan wybiela brod\u0119, \u017Ceby wygl\u0105da\u0107 m\u0105drzej.",

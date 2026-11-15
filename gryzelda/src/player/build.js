@@ -257,12 +257,15 @@ api.Ak = function Ak(e) {
     api.Ks(t, t.cp.zone, t.cp.x, t.cp.y),
     api.ne(
       t,
-      t.f._bridgeBack
-        ? "Kładki się urwały. Jesteś w wiosce. Kamila ma odbiór mostu, po tej stronie rzeki."
-        : "Wczytano zapis. Witaj z powrotem, " + t.look.name + "!",
+      t.f._plankReset
+        ? "Deski liczymy od nowa. Leżą na drodze, po zachodniej stronie rzeki. Kamila tylko podpisuje."
+        : t.f._bridgeBack
+          ? "Kładki się urwały. Jesteś w wiosce. Zdzich ma deski po tej stronie rzeki. Kamila tylko podpisuje."
+          : "Wczytano zapis. Witaj z powrotem, " + t.look.name + "!",
       3.4,
     ),
     delete t.f._bridgeBack,
+    delete t.f._plankReset,
     t
   );
 };

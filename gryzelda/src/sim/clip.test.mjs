@@ -123,11 +123,12 @@ test("combat actually skips damage on the wool scarf", () => {
   assert.equal(e.hp, 6);
 });
 
-test("fifteen hooks, seven of them are rewards, none missing", () => {
+test("sixteen hooks, the piles included, none missing", () => {
   assert.deepEqual(api.clipMiss, []);
-  assert.equal(api.clips.length, 15);
-  let rewards = api.clips.filter((h) => h.reward !== "coin");
+  assert.equal(api.clips.length, 16);
+  let rewards = api.clips.filter((h) => h.reward !== "coin" && h.reward !== "moor");
   assert.equal(rewards.length, 7);
+  assert.equal(api.clips.filter((h) => h.reward === "moor").length, 2);
   for (let h of api.clips) {
     let tile = api.qe[h.z].t[h.y][h.x];
     assert.notEqual(tile, "#");
@@ -147,25 +148,23 @@ test("hooks stay off doors", () => {
   }
 });
 
-test("both footbridges are gone and only Kamila's row opens", () => {
+test("the river stays water and the road bridge is wooden planks", () => {
   for (let y = 0; y < api.qe[1].h; y++)
     for (let x = 30; x <= 32; x++) assert.equal(api.qe[1].t[y][x], "w", y + "," + x);
-  for (let y of [8, 9, 23, 24]) assert.equal(api.qe[1].t[y][31], "w");
-  assert.equal(api.qe[1].t[12][26], ".");
-  assert.equal(api.qe[1].t[12][29], ".");
-  assert.equal(api.qe[1].t[12][33], ".");
+  for (let y of [8, 9, 12, 23, 24]) assert.equal(api.qe[1].t[y][31], "w");
+  assert.equal(api.qe[1].t[8][27], ":");
+  assert.equal(api.qe[1].t[8][29], ":");
+  assert.equal(api.qe[1].t[9][33], ":");
   let copy = api.qe[1].t.map((r) => r.slice());
   assert.equal(openMost(api.qe[1]), true);
-  assert.equal(api.qe[1].t[12][30], ".");
-  assert.equal(api.qe[1].t[12][31], ".");
-  assert.equal(api.qe[1].t[12][32], ".");
-  assert.equal(api.qe[1].t[8][31], "w");
+  for (let y of [8, 9])
+    for (let x of [30, 31, 32]) assert.equal(api.qe[1].t[y][x], "=", y + "," + x);
+  assert.equal(api.qe[1].t[7][31], "w");
+  assert.equal(api.qe[1].t[10][31], "w");
+  assert.equal(api.qe[1].t[12][31], "w");
   assert.equal(api.qe[1].t[23][31], "w");
-  assert.equal(api.qe[1].t[11][30], copy[11][30]);
-  assert.equal(api.qe[1].t[13][30], copy[13][30]);
-  api.qe[1].t[12][30] = "w";
-  api.qe[1].t[12][31] = "w";
-  api.qe[1].t[12][32] = "w";
+  assert.equal(api.qe[1].t[8][29], copy[8][29]);
+  for (let y of [8, 9]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
 });
 
 test("quest items sit on the hook and old quests are untouched", () => {
@@ -173,9 +172,16 @@ test("quest items sit on the hook and old quests are untouched", () => {
     spin = api.Qi.find((q) => q.id === "spin1"),
     rys = api.Qi.find((q) => q.id === "rys1"),
     kam1 = api.Qi.find((q) => q.id === "kam1");
-  assert.equal(kam.steps[1].tx, 26);
-  assert.equal(kam.steps[1].ty, 12);
-  assert.ok(kam.steps[1].tx < 30);
+  assert.equal(kam.giver, "zdzich");
+  assert.equal(kam.steps[0].t, "item");
+  assert.equal(kam.steps[0].tx, 27);
+  assert.equal(kam.steps[0].ty, 8);
+  assert.equal(kam.steps[0].ic, "deski");
+  assert.equal(kam.steps[1].to, "kamila");
+  assert.equal(/teczk/i.test([kam.ask, kam.offer, kam.accept, kam.done, kam.steps[1].txt].join(" ")), false);
+  assert.equal(/spinacz|most|darek|kamila/i.test(spin.ask), false);
+  assert.equal(/kamila|darek|\bmost\b/i.test(spin.offer), false);
+  assert.equal(/ruin/i.test(api.Qi.find((q) => q.id === "wan1").ask), false);
   assert.equal(kam.after, undefined);
   assert.equal(kam1.after, "kamMost");
   assert.equal(api.Hp({ f: {} }, kam), true);
@@ -281,12 +287,19 @@ function shell() {
   };
 }
 
-test("the bridge and the mill beam are a four-tile throw", () => {
-  let most = api.clipById("most");
+test("the road is not a hook, and the piles cross opposite ways", () => {
+  let east = api.clipById("palE");
+  let west = api.clipById("palW");
+  assert.equal(api.clipById("most"), undefined);
+  assert.deepEqual({ x: east.x, y: east.y }, { x: 33, y: 5 });
+  assert.deepEqual({ x: west.x, y: west.y }, { x: 29, y: 28 });
+  assert.ok(west.y > east.y);
+  assert.equal(rayHook(api.clips, 1, 29, 5, 1, 0).id, "palE");
+  assert.equal(rayHook(api.clips, 1, 33, 28, -1, 0).id, "palW");
+  assert.equal(rayHook(api.clips, 1, 29, 8, 1, 0), null);
+  assert.equal(rayHook(api.clips, 1, 33, 5, -1, 0), null);
   let belka = api.clipById("belka");
-  assert.deepEqual({ x: most.x, y: most.y }, { x: 33, y: 12 });
   assert.deepEqual({ x: belka.x, y: belka.y }, { x: 23, y: 16 });
-  assert.equal(rayHook(api.clips, 1, 29, 12, 1, 0).id, "most");
   assert.equal(rayHook(api.clips, 1, 23, 20, 0, -1).id, "belka");
   assert.equal(api.qe[11].t[api.clipLie.y][api.clipLie.x] === "." || api.qe[11].t[api.clipLie.y][api.clipLie.x] === "=" || api.qe[11].t[api.clipLie.y][api.clipLie.x] === ":", true);
 });
@@ -372,19 +385,19 @@ test("a loaded save reopens the bridge and lets Beczka out", () => {
   let x1 = sheep.x1,
     y0 = sheep.y0;
   assert.equal(api.qe[1].t[12][30], "w");
-  api.applyClipWorld({ f: { mostOpen: true, beczka: true } });
-  assert.equal(api.qe[1].t[12][30], ".");
-  assert.equal(api.qe[1].t[12][32], ".");
   assert.equal(api.qe[1].t[8][31], "w");
+  api.applyClipWorld({ f: { mostOpen: true, beczka: true } });
+  assert.equal(api.qe[1].t[8][30], "=");
+  assert.equal(api.qe[1].t[9][32], "=");
+  assert.equal(api.qe[1].t[12][30], "w");
   assert.equal(api.qe[1].t[23][31], "w");
   assert.equal(sheep.x1, 28);
   assert.equal(sheep.y0, 10);
   let armed = { f: { spinacz: true }, weapons: ["miecz"], weapon: "miecz" };
   api.applyClipWorld(armed);
   assert.equal(armed.weapon, "spinacz");
-  api.qe[1].t[12][30] = "w";
-  api.qe[1].t[12][31] = "w";
-  api.qe[1].t[12][32] = "w";
+  assert.equal(api.qe[1].t[8][31], "=");
+  for (let y of [8, 9]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
   sheep.x1 = x1;
   sheep.y0 = y0;
 });
