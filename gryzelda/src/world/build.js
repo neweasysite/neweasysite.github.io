@@ -2098,6 +2098,39 @@ api.bk = function bk() {
     f && (a.tx = f.x0);
     for (let c of u.exits) c.to === n.id && c.ty >= n.h - 4 && (c.tx = s);
   }
+  api.centerHouseDoors();
+};
+
+api.centerHouseDoors = function centerHouseDoors() {
+  for (let n of api.qe) {
+    if (!n || n.w > 18 || n.id >= 47) continue;
+    if (n.theme !== "inn" && n.theme !== "ruins") continue;
+    if (n.w % 2 === 0) {
+      let c = n.w - 1,
+        wall = n.t[0][c];
+      for (let y = 0; y < n.h; y++) {
+        let left = n.t[y][c - 1];
+        n.t[y].splice(
+          c,
+          0,
+          y === 0 || y === n.h - 1 || left === "#" || left === "t" ? wall : ".",
+        );
+      }
+      n.w++;
+    }
+    let mid = (n.w - 1) >> 1;
+    for (let ex of n.exits) {
+      if (ex.x0 !== ex.x1) continue;
+      if (ex.y0 !== 0 && ex.y0 !== n.h - 1) continue;
+      if (ex.x0 === mid) continue;
+      let tile = n.t[ex.y0][ex.x0];
+      if (tile !== "_" && tile !== "U" && tile !== "d") continue;
+      if ("_Ud".includes(n.t[ex.y0][mid])) continue;
+      n.t[ex.y0][ex.x0] = n.t[ex.y0][0];
+      n.t[ex.y0][mid] = tile;
+      ex.x0 = ex.x1 = mid;
+    }
+  }
 };
 
 api.vk = function vk(e, t, n, i, a) {
@@ -2219,20 +2252,17 @@ api.padPortals = function padPortals() {
     (z.toggles || []).some((s) => s.tx === x && s.ty === y) ||
     (z.plates || []).some((s) => s.tx === x && s.ty === y);
   const seek = (z, ax, ay, ix, iy, avoidBusy) => {
-    for (let dist = MIN; dist < Math.max(z.w, z.h) + 2; dist++) {
-      const bx = ax + ix * dist,
-        by = ay + iy * dist;
-      for (let lat = 0; lat <= 10; lat++) {
-        const lats = lat === 0 ? [0] : [lat, -lat];
-        for (const latv of lats) {
-          const x = ix !== 0 ? bx : bx + latv,
-            y = iy !== 0 ? by : by + latv;
+    for (let lat = 0; lat <= 4; lat++) {
+      const lats = lat === 0 ? [0] : [lat, -lat];
+      for (const latv of lats)
+        for (let dist = MIN; dist < Math.max(z.w, z.h) + 2; dist++) {
+          const x = ax + ix * dist + (ix === 0 ? latv : 0),
+            y = ay + iy * dist + (iy === 0 ? latv : 0);
           if (!open(z, x, y)) continue;
           if (exitDist(z, x, y) < MIN) continue;
           if (avoidBusy && taken(z, x, y)) continue;
           return [x, y];
         }
-      }
     }
     return null;
   };

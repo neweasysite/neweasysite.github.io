@@ -118,7 +118,7 @@ api.noteRiver = function noteRiver(e) {
   if (!e || !e.f || e.f.riverBlock || e.f["sqd:kamMost"] || !nearRiver(e)) return;
   e.f.riverBlock = !0;
   e.dirty = !0;
-  api.ne && api.ne(e, "Rzeka. Kładki nie ma. W wiosce Pan Zdzisiek miał ją postawić.", 3.6);
+  api.ne && api.ne(e, "Kładki nie ma. Tędy nie przejdę.", 2.8);
 };
 
 export function reachesWithoutFord(from, to) {

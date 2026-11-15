@@ -60,12 +60,17 @@ api.nh = function nh(e) {
       x1: t.x1,
       y1: t.y1,
       boop: -1,
+      hp: t.dark ? 10 : 6,
+      dead: !1,
+      flee: 0,
     });
 };
 
 api.flockTick = function flockTick(e, dt) {
   if (!e.flock) return;
   for (let s of e.flock) {
+    if (s.dead) continue;
+    if (s.flee > 0) s.flee -= dt;
     if (s.wait > 0) {
       ((s.wait -= dt), (s.moving = !1));
       if (s.wait > 0) continue;
@@ -90,7 +95,7 @@ api.flockTick = function flockTick(e, dt) {
       ((s.wait = 0.8 + Math.random() * 2.2), (s.moving = !1));
       continue;
     }
-    let sp = 12 * dt,
+    let sp = (s.flee > 0 ? 46 : 12) * dt,
       mx = Math.abs(cx) >= 0.4 ? Math.sign(cx) * Math.min(sp, Math.abs(cx)) : 0,
       my = mx ? 0 : Math.sign(cy) * Math.min(sp, Math.abs(cy)),
       nx = s.x + mx,
@@ -175,6 +180,100 @@ api.ah = function ah(e, t) {
         : ((a.wait = 0.6 + Math.random()), (a.moving = !1), (a.gx = a.x), (a.gy = a.y)));
   }
   api.flockTick(e, t);
+};
+
+const NPC_FIGHT = {
+  bogdan: 14,
+  wanda: 11,
+  zdzich: 9,
+  darek: 8,
+  hela: 8,
+  henio: 7,
+  staszek: 7,
+};
+
+const NPC_LINE = {
+  bogdan: "Na treningu, nie na mnie.",
+  wanda: "Młot nie jest na pokaz.",
+  zdzich: "Łopata też jest narzędziem.",
+  darek: "Paczka nie. Ja tak.",
+  hela: "Owce nie. Ja owszem.",
+  henio: "Kufel w dół.",
+  staszek: "Strach na wróble gryzie.",
+  kamila: "Protokół z napaści, już piszę.",
+  grazyna: "Ja to puszczę dalej.",
+  filip: "Au! Ja jestem prawie dorosły!",
+  ola: "Zostaw stado.",
+  rysiek: "Ryby nie, ja też nie.",
+  edek: "Grzyby są grzeczniejsze.",
+  mirek: "Cisza. I krok w tył.",
+  jadzia: "Babci się nie macha.",
+  piotr: "To nie jest wniosek.",
+  basia: "Eskaluję to na ciebie.",
+  horacy: "Cofnij się od zegara.",
+  iga: "To nie recepta na miecz.",
+  genowefa: "Garnek jest gorący. Ja też.",
+  wicek: "Owce liczę, nie zęby.",
+  franek: "Ej.",
+  zenek: "Myśliwy nie jest zwierzyną.",
+  halina: "Jeszcze raz, a zioła same cię zjedzą.",
+  zbyszek: "Fałsz. I nie w muzyce.",
+  kuba: "Raport z napaści, już piszę.",
+  mietek: "Gluty w piwnicy, nie ja.",
+  roma: "Cisza w archiwum.",
+  ghost: "Nieumarły też się odsuwa.",
+  kot: "Miau!",
+};
+
+api.pokeWorld = function pokeWorld(e, x, y, rad, dmg, token, fx, fy) {
+  if (!e) return !1;
+  let hit = !1;
+  for (let s of e.flock || []) {
+    if (s.dead || s.boop === token) continue;
+    if (Math.abs(s.x - x) >= rad + 6 || Math.abs(s.y - y) >= rad + 6) continue;
+    s.boop = token;
+    hit = !0;
+    s.hp = (s.hp == null ? (s.dark ? 10 : 6) : s.hp) - Math.max(1, Math.round(dmg || 1));
+    s.flee = 1.6;
+    s.wait = 0;
+    let ax = Math.sign(s.x - e.px) || -fx || 1,
+      ay = Math.sign(s.y - e.py) || -fy || 0,
+      tx = Math.max(s.x0, Math.min(s.x1, Math.floor(s.x / api.T) + ax * 3)),
+      ty = Math.max(s.y0, Math.min(s.y1, Math.floor(s.y / api.T) + ay * 2));
+    ((s.gx = api.Y(tx)), (s.gy = api.Y(ty)));
+    if (s.hp <= 0) {
+      s.dead = !0;
+      e.coins = (e.coins || 0) + (s.dark ? 3 : 1);
+      api.Es && api.Es(e, s.dark ? 8 : 3);
+      api.Ne && api.Ne(e, s.x, s.y - 14, "bee...", "#f4f0e4");
+      api.G && api.G(e, "kill");
+    } else api.Ne && api.Ne(e, s.x, s.y - 14, String(Math.round(dmg || 1)), "#ffffff");
+  }
+  if (!e.np) return hit;
+  let zone = api.Cn ? api.Cn(e) : null;
+  for (let id in e.np) {
+    let n = e.np[id];
+    if (!n || n.hitId === token) continue;
+    if (Math.abs(n.x - x) >= rad + 8 || Math.abs(n.y - y) >= rad + 8) continue;
+    n.hitId = token;
+    hit = !0;
+    let dx = Math.sign(n.x - e.px) || -fx || 1,
+      dy = Math.sign(n.y - e.py) || -fy || 0,
+      nx = n.x + dx * 16,
+      ny = n.y + dy * 12;
+    zone && api.Ap && api.Ap(e, zone, nx, ny, id)
+      ? ((n.x = nx), (n.y = ny), (n.gx = nx), (n.gy = ny))
+      : ((n.gx = n.x), (n.gy = n.y));
+    n.wait = 0.9;
+    api.Ne && api.Ne(e, n.x, n.y - 18, NPC_LINE[id] || "Ej.", "#f4ead8");
+    let lvl = NPC_FIGHT[id];
+    if (lvl) {
+      api.Ne && api.Ne(e, n.x, n.y - 28, "lvl " + lvl, "#ffd84a");
+      api.Oa && api.Oa(e, 6 + lvl, n.x, n.y);
+    }
+    api.G && api.G(e, "thud");
+  }
+  return hit;
 };
 
 api.fp = function fp(e, t) {

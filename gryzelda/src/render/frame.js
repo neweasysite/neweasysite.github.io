@@ -125,6 +125,7 @@ api.Dh = function Dh(e, t, n, i) {
         let k = q + api.t2(ye) - 2,
           L =
             (z.id === "bogdan" && (!t.f.bogdan || (t.f.won && !t.f.act2))) ||
+            (z.id === "bogdan" && t.f.riverBlock && !t.f.bogdanBridge && !t.f["sqd:kamMost"]) ||
             (z.id === "jadzia" && (!t.f.catQ || (t.f.cat && !t.f.catDone))) ||
             (z.id === "zenek" && (!t.f.nestQ || (api.Ds(t) >= 3 && !t.f.nestDone))) ||
             (z.id === "halina" && (!t.f.mushQ || (api.Ns(t) >= 5 && !t.f.mushDone))) ||
@@ -221,7 +222,8 @@ api.Dh = function Dh(e, t, n, i) {
         },
       });
   for (let z of t.flock || [])
-    ie(z.x, z.y) &&
+    !z.dead &&
+      ie(z.x, z.y) &&
       ze.push({
         y: z.y,
         fn: () => {

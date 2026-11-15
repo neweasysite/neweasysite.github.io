@@ -1171,6 +1171,10 @@ api.Qf = function Qf() {
                 p.f.seal && B("ruins", "Co jest w Ruinach?"),
                 p.f.act2 && (B("west", "Co jest na zachodzie?"), B("south", "A na po\u0142udniu?")),
                 p.f.westKey && p.f.southKey && B("undead", "Kraina Nieumar\u0142ego Supportu?"),
+                p.f.riverBlock &&
+                  !p.f.bogdanBridge &&
+                  !p.f["sqd:kamMost"] &&
+                  B("nokladka", "Nie ma kładki na wschód"),
                 U())
             : (K(
                 "Ho ho, " +
@@ -1202,6 +1206,14 @@ api.Qf = function Qf() {
                   "Wiedzia\u0142em! Pierwsza lekcja gratis: Doskok (przycisk \xBB albo Shift). Robisz unik i przez chwil\u0119 nic ci\u0119 nie trafia. Najpierw rozgrzewka: Mietek w karczmie Pod Pe\u0142n\u0105 Kolejk\u0105 ma gluty w piwnicy. Potem Las Szept\xF3w i Kr\xF3l Glut\xF3w: po\u0142kn\u0105\u0142 Piecz\u0119\u0107 Lasu, kt\xF3ra otwiera p\xF3\u0142nocn\u0105 bram\u0119 do Ruin.",
                 ),
                 U("Ruszam"))
+              : X === "nokladka"
+                ? (K(
+                    "Kładki nie ma, bo Zdzich miał ją postawić z powrotem. Deski już wyciął, leżą za wsią, po tej stronie. Idź do niego. Stoi w wiosce z łopatą.",
+                  ),
+                  ae("Idę do Zdzicha", () => {
+                    ((p.f.bogdanBridge = !0), (p.dirty = !0), api.fe(p), Se(""));
+                  }),
+                  U())
               : X === "where"
                 ? (K(
                     api.Zo(p).text +

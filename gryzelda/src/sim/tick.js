@@ -628,16 +628,7 @@ api.yh = function yh(e, t, n) {
     for (let d of e.eshots)
       !d.dead && Math.abs(d.x - x) < j + 4 && Math.abs(d.y - M) < j + 4 && api.fp(e, d);
     e.swing > 0.2 && api.lp(e, x, M, 5, !1);
-    for (let s of e.flock || [])
-      s.boop !== e.swingId &&
-        Math.abs(s.x - x) < 14 &&
-        Math.abs(s.y - M) < 14 &&
-        ((s.boop = e.swingId),
-        (s.gx = s.x + e.fx * 22),
-        (s.gy = s.y + e.fy * 22),
-        (s.wait = 0),
-        api.Ne(e, s.x, s.y - 14, "bee!", "#f4f0e4"),
-        api.G(e, "thud"));
+    api.pokeWorld && api.pokeWorld(e, x, M, j, l, e.swingId, e.fx, e.fy);
   }
   for (let l of e.items)
     if (!(l.kind !== "trap" || l.taken)) {
@@ -1371,6 +1362,8 @@ api.yh = function yh(e, t, n) {
         l.pierce > 0 ? l.pierce-- : (l.dead = !0);
       }
     }
+    if (!l.dead && api.pokeWorld && api.pokeWorld(e, l.x, l.y, 8, l.dmg, l, l.vx, l.vy))
+      l.pierce > 0 ? l.pierce-- : (l.dead = !0);
     if (
       (!l.dead &&
         D &&

@@ -210,9 +210,9 @@ api.Zo = function Zo(e) {
           x: 31,
           y: 30,
         }
-    : e.f.riverBlock && !e.f["sqd:kamMost"]
+    : e.f.bogdanBridge && !e.f["sqd:kamMost"]
       ? {
-          text: "Rzeka zamyka wschód. Pan Zdzisiek w Wiosce miał postawić kładkę.",
+          text: "Pan Zdzisiek miał postawić kładkę. Stoi w Wiosce, przy drodze.",
           zone: 0,
           x: 16,
           y: 20,
@@ -750,7 +750,7 @@ api.Zp = function Zp(e, t) {
           ((offered = !0),
           i.push({
             label:
-              a.id === "kamMost" && e.f.riverBlock ? "Nie da się przejść na wschód" : a.ask,
+              a.id === "kamMost" && e.f.bogdanBridge ? "Nie da się przejść na wschód" : a.ask,
             go: "sq:" + a.id + ":offer",
           }))
         : api.Hf(e, a.id) &&
@@ -786,7 +786,7 @@ api.Hp = function Hp(e, t) {
     (t.gate && !api._p(e, t.gate))
   )
     return !1;
-  if (t.id === "kamMost" && !e.f.riverBlock) return !1;
+  if (t.id === "kamMost" && !e.f.bogdanBridge) return !1;
   for (let q of api.Qi)
     if (q.giver === t.giver && q.id !== t.id && e.f["sq:" + q.id] && !e.f["sqd:" + q.id]) return !1;
   return !0;

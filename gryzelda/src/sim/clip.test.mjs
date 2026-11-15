@@ -10,8 +10,9 @@ import "../data/content.js";
 import "../quest/flow.js";
 import "./interact.js";
 import "../player/build.js";
-import "../sim/combat.js";
-import "../sim/tick.js";
+import "./combat.js";
+import "./tick.js";
+import "../system/rest.js";
 import { decideClip, rayHook, scarfAbsorb, openMost, openEast, facing, clipBlockedByPuzzle, reachesWithoutFord, nearRiver } from "./clip.js";
 
 api.initData();
@@ -192,14 +193,15 @@ test("quest items sit on the hook and old quests are untouched", () => {
   assert.equal(zdz.after, "kamMost");
   assert.equal(wan.after, "spin1");
   assert.equal(api.Hp({ f: {} }, kam), false);
-  assert.equal(api.Hp({ f: { riverBlock: true } }, kam), true);
+  assert.equal(api.Hp({ f: { riverBlock: true } }, kam), false);
+  assert.equal(api.Hp({ f: { bogdanBridge: true } }, kam), true);
   assert.equal(api.Hp({ f: {} }, zdz), false);
-  assert.equal(api.Hp({ f: { riverBlock: true, "sqd:kamMost": true } }, zdz), true);
-  assert.equal(api.Hp({ f: { riverBlock: true, "sq:kamMost": true } }, zdz), false);
+  assert.equal(api.Hp({ f: { bogdanBridge: true, "sqd:kamMost": true } }, zdz), true);
+  assert.equal(api.Hp({ f: { bogdanBridge: true, "sq:kamMost": true } }, zdz), false);
   assert.equal(api.Hp({ f: { seal: true } }, wan), false);
   assert.equal(api.Hp({ f: { seal: true, "sqd:spin1": true } }, wan), true);
   assert.equal(api.Zp({ f: {} }, "zdzich").opts.filter((o) => o.go && o.go.endsWith(":offer")).length, 0);
-  let stuck = api.Zp({ f: { riverBlock: true } }, "zdzich").opts.find((o) => o.go && o.go.endsWith(":offer"));
+  let stuck = api.Zp({ f: { bogdanBridge: true } }, "zdzich").opts.find((o) => o.go && o.go.endsWith(":offer"));
   assert.equal(stuck.label, "Nie da się przejść na wschód");
   let fresh = { f: {} },
     by = {};
@@ -216,7 +218,7 @@ test("quest items sit on the hook and old quests are untouched", () => {
   );
   assert.equal(kam.after, undefined);
   assert.equal(kam1.after, "kamMost");
-  assert.equal(api.Hp({ f: { riverBlock: true } }, kam), true);
+  assert.equal(api.Hp({ f: { bogdanBridge: true } }, kam), true);
   assert.equal(api.Hp({ f: {} }, kam1), false);
   assert.equal(spin.after, "rys1");
   assert.equal(rys.steps.length, 2);
@@ -440,28 +442,104 @@ test("a loaded save reopens the bridge and lets Beczka out", () => {
   sheep.y0 = y0;
 });
 
-test("the lure is on the lower pasture, and the river sends you to Zdzich", () => {
+test("the river only says the footbridge is gone, Bogdan names Zdzich", () => {
   let lure = api.Qi.find((q) => q.id === "rys1").steps[0];
   assert.equal(lure.z, 43);
   assert.equal(lure.tx, 22);
   assert.equal(lure.ty, 22);
-  assert.equal(api.qe[43].t[22][22], ":");
-  assert.equal(api.Qo({ f: {} }, api.qe[43].t[22][22]), false);
-  assert.ok(api.qe[43].items.some((s) => s.id === "rys1:0" && s.tx === 22 && s.ty === 22));
-  assert.equal(reachesWithoutFord(0, 43), true);
-  assert.equal(nearRiver({ zone: 1, px: api.Y(10), py: api.Y(15), f: {} }), false);
-  assert.equal(nearRiver({ zone: 1, px: api.Y(29), py: api.Y(8), f: {} }), true);
+  let said = "";
+  let prev = api.ne;
+  api.ne = (_e, m) => {
+    said = m;
+  };
   let e = { zone: 1, px: api.Y(29), py: api.Y(8), f: {}, dirty: false };
   api.noteRiver(e);
+  api.ne = prev;
   assert.equal(e.f.riverBlock, true);
-  api.noteRiver(e);
-  assert.equal(api.dh({ f: {} }, "zdzich"), false);
-  assert.equal(api.dh({ f: { riverBlock: true } }, "zdzich"), true);
-  let goal = api.Zo({ f: { bogdan: true, cellarDone: true, riverBlock: true } });
-  assert.equal(goal.zone, 0);
-  assert.equal(goal.x, 16);
-  assert.match(goal.text, /Zdzisiek/);
-  let open = api.Zo({ f: { bogdan: true, cellarDone: true, riverBlock: true, "sqd:kamMost": true } });
-  assert.equal(open.zone, 2);
+  assert.match(said, /Kładki nie ma/);
+  assert.equal(/zdzich|bogdan/i.test(said), false);
+  assert.equal(api.dh({ f: { riverBlock: true } }, "zdzich"), false);
+  assert.equal(api.dh({ f: { bogdanBridge: true } }, "zdzich"), true);
+  let early = api.Zo({ f: { bogdan: true, cellarDone: true, riverBlock: true } });
+  assert.equal(early.zone, 2);
+  let told = api.Zo({ f: { bogdan: true, cellarDone: true, bogdanBridge: true } });
+  assert.equal(told.zone, 0);
+  assert.equal(told.x, 16);
+  assert.match(told.text, /Zdzisiek/);
+});
+
+test("sheep die and run, fighters hit back, house doors sit in the middle", () => {
+  let e = {
+    zone: 0,
+    px: 80,
+    py: 80,
+    fx: 1,
+    fy: 0,
+    f: {},
+    coins: 0,
+    hp: 30,
+    inv: 0,
+    dashT: 0,
+    dead: false,
+    win: false,
+    ward: 0,
+    texts: [],
+    parts: [],
+    sq: [],
+    blocks: [],
+    settings: { shake: false },
+    flock: [
+      {
+        x: 80,
+        y: 80,
+        gx: 80,
+        gy: 80,
+        hp: 6,
+        dead: false,
+        dark: false,
+        x0: 0,
+        y0: 0,
+        x1: 30,
+        y1: 30,
+        boop: -1,
+        flee: 0,
+        wait: 1,
+      },
+    ],
+    np: {
+      bogdan: { x: 200, y: 80, gx: 200, gy: 80, hitId: -1, wait: 2 },
+      filip: { x: 200, y: 120, gx: 200, gy: 120, hitId: -1, wait: 2 },
+    },
+  };
+  api.pokeWorld(e, 80, 80, 10, 2, 1, 1, 0);
+  assert.equal(e.flock[0].hp, 4);
+  assert.ok(e.flock[0].flee > 0);
+  assert.equal(e.flock[0].dead, false);
+  api.pokeWorld(e, 80, 80, 10, 9, 2, 1, 0);
+  assert.equal(e.flock[0].dead, true);
+  assert.equal(e.coins, 1);
+  let before = e.hp;
+  api.pokeWorld(e, 200, 80, 10, 3, 3, 1, 0);
+  assert.ok(e.hp < before);
+  assert.equal(e.np.filip.hitId, -1);
+  for (const z of api.qe) {
+    if (!z || z.theme !== "inn" || z.w > 18) continue;
+    assert.equal(z.w % 2, 1, z.name + " width");
+    for (const ex of z.exits) {
+      const tile = z.t[ex.y0][ex.x0];
+      if ((tile === "_" || tile === "U" || tile === "d") && (ex.y0 === 0 || ex.y0 === z.h - 1))
+        assert.equal(ex.x0, (z.w - 1) >> 1, z.name);
+    }
+  }
+  for (const z of api.qe)
+    for (const ex of z.exits || []) {
+      const dest = api.qe.find((d) => d && d.id === ex.to);
+      if (!dest || dest.theme !== "inn" || dest.w > 18) continue;
+      const back = (dest.exits || []).find(
+        (r) => r.to === z.id && dest.t[r.y0] && dest.t[r.y0][r.x0] === "_",
+      );
+      if (!back) continue;
+      assert.equal(ex.tx, back.x0, dest.name + " landing");
+    }
 });
 
