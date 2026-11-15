@@ -165,6 +165,7 @@ api.yh = function yh(e, t, n) {
     } else e.pushT = 0;
   }
   ((e.px = u.x), (e.py = u.y));
+  api.noteRiver && api.noteRiver(e);
   let f = Math.floor(e.px / api.T),
     c = Math.floor(e.py / api.T);
   for (let l = -1; l <= 1; l++)

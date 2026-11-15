@@ -675,9 +675,9 @@ api.initData = function initData() {
       giver: "rysiek",
       ask: "Bior\u0105 dzisiaj?",
       offer:
-        "Bior\u0105, tylko nie ryby, a gluty. Zgubi\u0142em z\u0142ot\u0105 b\u0142ystk\u0119, kiedy goni\u0142em z\u0142otego gluta. My\u015Bla\u0142em, \u017Ce to z\u0142ota rybka, a to by\u0142 zwyk\u0142y bezczelny glut. B\u0142ystka polecia\u0142a do Lasu Szept\xF3w, na wsch\xF3d.",
+        "Biorą, tylko nie ryby, a gluty. Zgubiłem złotą błystkę, kiedy goniłem złotego gluta. Myślałem, że to złota rybka. Poleciała za młyn, na dolne pastwisko: w prawo od przysiółka i w dół, zanim droga wejdzie do wagi.",
       accept:
-        "Z\u0142ota, b\u0142yszcz\u0105ca, z haczykiem. Uwa\u017Caj na palce. I na gluty. I na moj\u0105 reputacj\u0119.",
+        "Złota, błyszcząca, z haczykiem. Pastwisko jest za młynem, nie w lesie. Uważaj na owce. I na palce.",
       prog: "Bez b\u0142ystki \u0142owi\u0119 na kawa\u0142ek kanapki. Ryby si\u0119 ze mnie \u015Bmiej\u0105.",
       turn: "Oddaj naprawion\u0105 b\u0142ystk\u0119",
       done: "Moja b\u0142ystka! I haczyk prosty jak nigdy! Ryb\u0119, kt\xF3r\u0105 na ni\u0105 z\u0142owi\u0119, b\u0119dzie TAKA! (Rysiek rozk\u0142ada r\u0119ce coraz szerzej.) Masz 50 groszy.",
@@ -685,13 +685,13 @@ api.initData = function initData() {
       steps: [
         {
           t: "item",
-          z: 2,
-          tx: 51,
-          ty: 21,
+          z: 43,
+          tx: 22,
+          ty: 22,
           name: "Z\u0142ota b\u0142ystka",
           ic: "rys1",
-          hint: "Las Szept\xF3w: wsch\xF3d",
-          fin: "B\u0142ystka! Haczyk wygi\u0119ty w precla. Z takim to ryba si\u0119 tylko po\u015Bmieje. Kowalka Wanda w Wiosce na pewno go wyklepie.",
+          hint: "Pastwisko za Płotem: dolna droga, za przysiółkiem",
+          fin: "Błystka! Haczyk wygięty w precla. Z takim to ryba się tylko pośmieje. Kowalka Wanda w Wiosce na pewno go wyklepie.",
         },
         {
           t: "talk",
@@ -1133,7 +1133,7 @@ api.initData = function initData() {
       giver: "zdzich",
       ask: "Czemu pan tak patrzy w stronę łąki?",
       offer:
-        "Bo droga się tam urywa. Kładki zgniły, została rzeka. Trzy deski leżą na zachodniej drodze, zaraz za wsią, zanim droga w ogóle skręci do wody. Nie przy moście, mostu nie ma. Zanieś je Kamili. Ja niosę łopatę, ona niesie pieczątkę.",
+        "Bo to ja miałem tę kładkę postawić z powrotem. Zgniła, została rzeka, a mistrz Bogdan i tak wysyła ludzi do Lasu Szeptów. Trzy deski leżą na zachodniej drodze, zaraz za wsią, zanim droga dojdzie do wody. Zanieś je Kamili. Ona podpisze, ja położę. Dopiero wtedy idzie się na wschód.",
       accept:
         "Zachodnia droga, tuż po wejściu na łąkę. Widać je z ścieżki. Jak Kamila podpisze, wróć do mnie. Dopiero wtedy kładę deski na głównej drodze.",
       prog: "Deski leżą na drodze albo Kamila jeszcze nie stempluje.",

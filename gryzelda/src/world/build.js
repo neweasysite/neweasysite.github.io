@@ -1853,6 +1853,7 @@ api.hk = function hk() {
       (k[22][25] = "."),
       (k[23][25] = "."),
       (k[20][8] = "H"),
+      (k[22][22] = ":"),
       (past.npcs = [{ id: "hela", tx: 12, ty: 14 }]),
       (past.spawns = [
         ["slime", 30, 12],

@@ -12,7 +12,7 @@ import "./interact.js";
 import "../player/build.js";
 import "../sim/combat.js";
 import "../sim/tick.js";
-import { decideClip, rayHook, scarfAbsorb, openMost, openEast, facing, clipBlockedByPuzzle, reachesWithoutFord } from "./clip.js";
+import { decideClip, rayHook, scarfAbsorb, openMost, openEast, facing, clipBlockedByPuzzle, reachesWithoutFord, nearRiver } from "./clip.js";
 
 api.initData();
 
@@ -191,13 +191,16 @@ test("quest items sit on the hook and old quests are untouched", () => {
   let wan = api.Qi.find((q) => q.id === "wan1");
   assert.equal(zdz.after, "kamMost");
   assert.equal(wan.after, "spin1");
-  assert.equal(api.Hp({ f: {} }, kam), true);
+  assert.equal(api.Hp({ f: {} }, kam), false);
+  assert.equal(api.Hp({ f: { riverBlock: true } }, kam), true);
   assert.equal(api.Hp({ f: {} }, zdz), false);
-  assert.equal(api.Hp({ f: { "sqd:kamMost": true } }, zdz), true);
-  assert.equal(api.Hp({ f: { "sq:kamMost": true } }, zdz), false);
+  assert.equal(api.Hp({ f: { riverBlock: true, "sqd:kamMost": true } }, zdz), true);
+  assert.equal(api.Hp({ f: { riverBlock: true, "sq:kamMost": true } }, zdz), false);
   assert.equal(api.Hp({ f: { seal: true } }, wan), false);
   assert.equal(api.Hp({ f: { seal: true, "sqd:spin1": true } }, wan), true);
-  assert.equal(api.Zp({ f: {} }, "zdzich").opts.filter((o) => o.go && o.go.endsWith(":offer")).length, 1);
+  assert.equal(api.Zp({ f: {} }, "zdzich").opts.filter((o) => o.go && o.go.endsWith(":offer")).length, 0);
+  let stuck = api.Zp({ f: { riverBlock: true } }, "zdzich").opts.find((o) => o.go && o.go.endsWith(":offer"));
+  assert.equal(stuck.label, "Nie da się przejść na wschód");
   let fresh = { f: {} },
     by = {};
   for (let q of api.Qi) if (api.Hp(fresh, q)) by[q.giver] = (by[q.giver] || 0) + 1;
@@ -213,7 +216,7 @@ test("quest items sit on the hook and old quests are untouched", () => {
   );
   assert.equal(kam.after, undefined);
   assert.equal(kam1.after, "kamMost");
-  assert.equal(api.Hp({ f: {} }, kam), true);
+  assert.equal(api.Hp({ f: { riverBlock: true } }, kam), true);
   assert.equal(api.Hp({ f: {} }, kam1), false);
   assert.equal(spin.after, "rys1");
   assert.equal(rys.steps.length, 2);
@@ -435,5 +438,30 @@ test("a loaded save reopens the bridge and lets Beczka out", () => {
   for (let y of [8, 9, 23, 24]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
   sheep.x1 = x1;
   sheep.y0 = y0;
+});
+
+test("the lure is on the lower pasture, and the river sends you to Zdzich", () => {
+  let lure = api.Qi.find((q) => q.id === "rys1").steps[0];
+  assert.equal(lure.z, 43);
+  assert.equal(lure.tx, 22);
+  assert.equal(lure.ty, 22);
+  assert.equal(api.qe[43].t[22][22], ":");
+  assert.equal(api.Qo({ f: {} }, api.qe[43].t[22][22]), false);
+  assert.ok(api.qe[43].items.some((s) => s.id === "rys1:0" && s.tx === 22 && s.ty === 22));
+  assert.equal(reachesWithoutFord(0, 43), true);
+  assert.equal(nearRiver({ zone: 1, px: api.Y(10), py: api.Y(15), f: {} }), false);
+  assert.equal(nearRiver({ zone: 1, px: api.Y(29), py: api.Y(8), f: {} }), true);
+  let e = { zone: 1, px: api.Y(29), py: api.Y(8), f: {}, dirty: false };
+  api.noteRiver(e);
+  assert.equal(e.f.riverBlock, true);
+  api.noteRiver(e);
+  assert.equal(api.dh({ f: {} }, "zdzich"), false);
+  assert.equal(api.dh({ f: { riverBlock: true } }, "zdzich"), true);
+  let goal = api.Zo({ f: { bogdan: true, cellarDone: true, riverBlock: true } });
+  assert.equal(goal.zone, 0);
+  assert.equal(goal.x, 16);
+  assert.match(goal.text, /Zdzisiek/);
+  let open = api.Zo({ f: { bogdan: true, cellarDone: true, riverBlock: true, "sqd:kamMost": true } });
+  assert.equal(open.zone, 2);
 });
 

@@ -102,6 +102,25 @@ api.paintBridges = function paintBridges(e) {
   e.f["sqd:kam3"] && openEast(zone);
 };
 
+export function nearRiver(e) {
+  if (!e || e.zone !== 1 || !api.qe || !api.qe[1]) return !1;
+  if (e.f && e.f["sqd:kamMost"]) return !1;
+  let tx = Math.floor(e.px / api.T),
+    ty = Math.floor(e.py / api.T),
+    zone = api.qe[1];
+  for (let y = ty - 1; y <= ty + 1; y++)
+    for (let x = tx - 1; x <= tx + 1; x++)
+      if (zone.t[y] && zone.t[y][x] === "w" && x >= 30 && x <= 32) return !0;
+  return !1;
+}
+
+api.noteRiver = function noteRiver(e) {
+  if (!e || !e.f || e.f.riverBlock || e.f["sqd:kamMost"] || !nearRiver(e)) return;
+  e.f.riverBlock = !0;
+  e.dirty = !0;
+  api.ne && api.ne(e, "Rzeka. Kładki nie ma. W wiosce Pan Zdzisiek miał ją postawić.", 3.6);
+};
+
 export function reachesWithoutFord(from, to) {
   let seen = new Set(),
     q = [from];

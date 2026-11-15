@@ -210,12 +210,19 @@ api.Zo = function Zo(e) {
           x: 31,
           y: 30,
         }
-    : {
-        text: "Id\u017A na wsch\xF3d przez \u0141\u0105k\u0119 do Lasu Szept\xF3w i pokonaj Kr\xF3la Glut\xF3w na polanie.",
-        zone: 2,
-        x: 31,
-        y: 30,
-      };
+    : e.f.riverBlock && !e.f["sqd:kamMost"]
+      ? {
+          text: "Rzeka zamyka wschód. Pan Zdzisiek w Wiosce miał postawić kładkę.",
+          zone: 0,
+          x: 16,
+          y: 20,
+        }
+      : {
+          text: "Id\u017A na wsch\xF3d przez \u0141\u0105k\u0119 do Lasu Szept\xF3w i pokonaj Kr\xF3la Glut\xF3w na polanie.",
+          zone: 2,
+          x: 31,
+          y: 30,
+        };
 };
 
 api.ch = function ch(e, t) {
@@ -739,7 +746,13 @@ api.Zp = function Zp(e, t) {
   for (let a of api.Qi) {
     a.giver === t &&
       (api.Hp(e, a)
-        ? offered || ((offered = !0), i.push({ label: a.ask, go: "sq:" + a.id + ":offer" }))
+        ? offered ||
+          ((offered = !0),
+          i.push({
+            label:
+              a.id === "kamMost" && e.f.riverBlock ? "Nie da się przejść na wschód" : a.ask,
+            go: "sq:" + a.id + ":offer",
+          }))
         : api.Hf(e, a.id) &&
           (api.Bf(e, a)
             ? i.push(
@@ -773,6 +786,7 @@ api.Hp = function Hp(e, t) {
     (t.gate && !api._p(e, t.gate))
   )
     return !1;
+  if (t.id === "kamMost" && !e.f.riverBlock) return !1;
   for (let q of api.Qi)
     if (q.giver === t.giver && q.id !== t.id && e.f["sq:" + q.id] && !e.f["sqd:" + q.id]) return !1;
   return !0;
