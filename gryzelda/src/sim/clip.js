@@ -66,14 +66,23 @@ export function scarfAbsorb(e) {
 api.scarfAbsorb = scarfAbsorb;
 
 export const BRIDGE_ROWS = [8, 9];
+export const EAST_ROWS = [23, 24];
 
-export function openMost(zone) {
+export function openRows(zone, rows) {
   if (!zone) return !1;
-  for (let y of BRIDGE_ROWS) {
+  for (let y of rows) {
     if (!zone.t[y]) return !1;
     for (let x = 30; x <= 32; x++) zone.t[y][x] = "=";
   }
-  return BRIDGE_ROWS.every((y) => [30, 31, 32].every((x) => zone.t[y][x] === "="));
+  return rows.every((y) => [30, 31, 32].every((x) => zone.t[y][x] === "="));
+}
+
+export function openMost(zone) {
+  return openRows(zone, BRIDGE_ROWS);
+}
+
+export function openEast(zone) {
+  return openRows(zone, EAST_ROWS);
 }
 
 export function sealRiver(zone) {
@@ -83,6 +92,15 @@ export function sealRiver(zone) {
     for (let x = 30; x <= 32; x++) zone.t[y][x] = "w";
   }
 }
+
+api.paintBridges = function paintBridges(e) {
+  let zone = api.qe && api.qe[1];
+  if (!zone) return;
+  sealRiver(zone);
+  if (!e || !e.f) return;
+  e.f["sqd:kamMost"] && openMost(zone);
+  e.f["sqd:kam3"] && openEast(zone);
+};
 
 export function reachesWithoutFord(from, to) {
   let seen = new Set(),
@@ -210,6 +228,11 @@ api.placeClips = function placeClips() {
     for (let x = 24; x <= 29; x++) meadow.t[y][x] !== "w" && (meadow.t[y][x] = ":");
   for (let y of BRIDGE_ROWS)
     for (let x = 33; x <= 42; x++) meadow.t[y][x] !== "w" && (meadow.t[y][x] = ":");
+  for (let x = 4; x <= 12; x++) {
+    meadow.t[15][x] !== "w" && (meadow.t[15][x] = ":");
+    meadow.t[16][x] !== "w" && (meadow.t[16][x] = ":");
+  }
+  sealRiver(meadow);
   api.clips = [];
   api.clipMiss = [];
   for (let spec of api.clipSpecs) {
@@ -417,8 +440,12 @@ api.onQuestDone = function onQuestDone(e, t) {
     grantSpinacz(e);
     e.dirty = !0;
   } else if (t.id === "kamMost") {
-    openMost(api.qe[1]);
     e.f.mostOpen = !0;
+    api.paintBridges(e);
+    e.layerDirty = !0;
+    e.dirty = !0;
+  } else if (t.id === "kam3") {
+    api.paintBridges(e);
     e.layerDirty = !0;
     e.dirty = !0;
   } else if (t.id === "falsz1") {
@@ -439,8 +466,9 @@ api.applyClipWorld = function applyClipWorld(e) {
     e.f["sqs:kamMost"] = 0;
     e.f._plankReset = !0;
   }
-  if (e.f.mostOpen || e.f["sqd:kamMost"]) openMost(api.qe[1]);
-  else {
+  e.f["sqd:kamMost"] ? (e.f.mostOpen = !0) : (e.f.mostOpen = !1);
+  api.paintBridges(e);
+  if (!e.f["sqd:kamMost"] && !e.f["sqd:kam3"]) {
     if (e.cp && !reachesWithoutFord(0, e.cp.zone) && api.Qn) {
       e.cp = { zone: 0, x: api.Y(api.Qn.x), y: api.Y(api.Qn.y) };
       e.f._bridgeBack = !0;
@@ -456,6 +484,6 @@ api.applyClipWorld = function applyClipWorld(e) {
       ty = Math.floor(e.cp.y / api.T),
       tile = api.qe[1].t[ty] && api.qe[1].t[ty][tx];
     tile === "w" &&
-      ((e.cp = { zone: 1, x: api.Y(27), y: api.Y(8) }), (e.f._bridgeBack = !0));
+      ((e.cp = { zone: 1, x: api.Y(8), y: api.Y(15) }), (e.f._bridgeBack = !0));
   }
 };

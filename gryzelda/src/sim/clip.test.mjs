@@ -12,7 +12,7 @@ import "./interact.js";
 import "../player/build.js";
 import "../sim/combat.js";
 import "../sim/tick.js";
-import { decideClip, rayHook, scarfAbsorb, openMost, facing, clipBlockedByPuzzle, reachesWithoutFord } from "./clip.js";
+import { decideClip, rayHook, scarfAbsorb, openMost, openEast, facing, clipBlockedByPuzzle, reachesWithoutFord } from "./clip.js";
 
 api.initData();
 
@@ -149,22 +149,26 @@ test("hooks stay off doors", () => {
 });
 
 test("the river stays water and the road bridge is wooden planks", () => {
+  let fords = 0;
+  for (let y = 0; y < api.qe[1].h; y++)
+    for (let x = 0; x < api.qe[1].w; x++) if (api.qe[1].t[y][x] === "=") fords++;
+  assert.equal(fords, 0);
   for (let y = 0; y < api.qe[1].h; y++)
     for (let x = 30; x <= 32; x++) assert.equal(api.qe[1].t[y][x], "w", y + "," + x);
-  for (let y of [8, 9, 12, 23, 24]) assert.equal(api.qe[1].t[y][31], "w");
-  assert.equal(api.qe[1].t[8][27], ":");
-  assert.equal(api.qe[1].t[8][29], ":");
-  assert.equal(api.qe[1].t[9][33], ":");
+  assert.equal(api.qe[1].t[15][8], ":");
+  assert.ok(8 < 30);
   let copy = api.qe[1].t.map((r) => r.slice());
   assert.equal(openMost(api.qe[1]), true);
   for (let y of [8, 9])
     for (let x of [30, 31, 32]) assert.equal(api.qe[1].t[y][x], "=", y + "," + x);
+  assert.equal(api.qe[1].t[23][31], "w");
   assert.equal(api.qe[1].t[7][31], "w");
   assert.equal(api.qe[1].t[10][31], "w");
-  assert.equal(api.qe[1].t[12][31], "w");
-  assert.equal(api.qe[1].t[23][31], "w");
+  assert.equal(openEast(api.qe[1]), true);
+  for (let y of [23, 24])
+    for (let x of [30, 31, 32]) assert.equal(api.qe[1].t[y][x], "=", y + "," + x);
   assert.equal(api.qe[1].t[8][29], copy[8][29]);
-  for (let y of [8, 9]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
+  for (let y of [8, 9, 23, 24]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
 });
 
 test("quest items sit on the hook and old quests are untouched", () => {
@@ -174,14 +178,39 @@ test("quest items sit on the hook and old quests are untouched", () => {
     kam1 = api.Qi.find((q) => q.id === "kam1");
   assert.equal(kam.giver, "zdzich");
   assert.equal(kam.steps[0].t, "item");
-  assert.equal(kam.steps[0].tx, 27);
-  assert.equal(kam.steps[0].ty, 8);
+  assert.equal(kam.steps[0].tx, 8);
+  assert.equal(kam.steps[0].ty, 15);
+  assert.ok(kam.steps[0].tx < 20);
   assert.equal(kam.steps[0].ic, "deski");
   assert.equal(kam.steps[1].to, "kamila");
   assert.equal(/teczk/i.test([kam.ask, kam.offer, kam.accept, kam.done, kam.steps[1].txt].join(" ")), false);
   assert.equal(/spinacz|most|darek|kamila/i.test(spin.ask), false);
   assert.equal(/kamila|darek|\bmost\b/i.test(spin.offer), false);
   assert.equal(/ruin/i.test(api.Qi.find((q) => q.id === "wan1").ask), false);
+  let zdz = api.Qi.find((q) => q.id === "zdz1");
+  let wan = api.Qi.find((q) => q.id === "wan1");
+  assert.equal(zdz.after, "kamMost");
+  assert.equal(wan.after, "spin1");
+  assert.equal(api.Hp({ f: {} }, kam), true);
+  assert.equal(api.Hp({ f: {} }, zdz), false);
+  assert.equal(api.Hp({ f: { "sqd:kamMost": true } }, zdz), true);
+  assert.equal(api.Hp({ f: { "sq:kamMost": true } }, zdz), false);
+  assert.equal(api.Hp({ f: { seal: true } }, wan), false);
+  assert.equal(api.Hp({ f: { seal: true, "sqd:spin1": true } }, wan), true);
+  assert.equal(api.Zp({ f: {} }, "zdzich").opts.filter((o) => o.go && o.go.endsWith(":offer")).length, 1);
+  let fresh = { f: {} },
+    by = {};
+  for (let q of api.Qi) if (api.Hp(fresh, q)) by[q.giver] = (by[q.giver] || 0) + 1;
+  for (let [g, n] of Object.entries(by)) assert.equal(n, 1, g);
+  let afterBridge = { f: { "sqd:kamMost": true } };
+  assert.deepEqual(
+    api.Qi.filter((q) => q.giver === "zdzich" && api.Hp(afterBridge, q)).map((q) => q.id),
+    ["zdz1"],
+  );
+  assert.deepEqual(
+    api.Qi.filter((q) => q.giver === "kamila" && api.Hp(afterBridge, q)).map((q) => q.id),
+    ["kam1"],
+  );
   assert.equal(kam.after, undefined);
   assert.equal(kam1.after, "kamMost");
   assert.equal(api.Hp({ f: {} }, kam), true);
@@ -384,20 +413,26 @@ test("a loaded save reopens the bridge and lets Beczka out", () => {
   let sheep = api.qe[1].sheep.find((s) => s.dark);
   let x1 = sheep.x1,
     y0 = sheep.y0;
-  assert.equal(api.qe[1].t[12][30], "w");
   assert.equal(api.qe[1].t[8][31], "w");
+  assert.equal(api.qe[1].t[23][31], "w");
   api.applyClipWorld({ f: { mostOpen: true, beczka: true } });
+  assert.equal(api.qe[1].t[8][31], "w");
+  assert.equal(api.qe[1].t[23][31], "w");
+  api.applyClipWorld({ f: { "sqd:kamMost": true, beczka: true } });
   assert.equal(api.qe[1].t[8][30], "=");
   assert.equal(api.qe[1].t[9][32], "=");
-  assert.equal(api.qe[1].t[12][30], "w");
   assert.equal(api.qe[1].t[23][31], "w");
+  api.applyClipWorld({ f: { "sqd:kamMost": true, "sqd:kam3": true } });
+  assert.equal(api.qe[1].t[23][30], "=");
+  assert.equal(api.qe[1].t[24][32], "=");
+  assert.equal(api.qe[1].t[8][31], "=");
   assert.equal(sheep.x1, 28);
   assert.equal(sheep.y0, 10);
   let armed = { f: { spinacz: true }, weapons: ["miecz"], weapon: "miecz" };
   api.applyClipWorld(armed);
   assert.equal(armed.weapon, "spinacz");
-  assert.equal(api.qe[1].t[8][31], "=");
-  for (let y of [8, 9]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
+  assert.equal(api.qe[1].t[8][31], "w");
+  for (let y of [8, 9, 23, 24]) for (let x of [30, 31, 32]) api.qe[1].t[y][x] = "w";
   sheep.x1 = x1;
   sheep.y0 = y0;
 });

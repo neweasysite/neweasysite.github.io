@@ -734,11 +734,12 @@ api.Up = function Up(e, t, n) {
 
 api.Zp = function Zp(e, t) {
   let n = [],
-    i = [];
+    i = [],
+    offered = !1;
   for (let a of api.Qi) {
     a.giver === t &&
       (api.Hp(e, a)
-        ? i.push({ label: a.ask, go: "sq:" + a.id + ":offer" })
+        ? offered || ((offered = !0), i.push({ label: a.ask, go: "sq:" + a.id + ":offer" }))
         : api.Hf(e, a.id) &&
           (api.Bf(e, a)
             ? i.push(
@@ -765,9 +766,16 @@ api.oh = function oh(e) {
 };
 
 api.Hp = function Hp(e, t) {
-  return (
-    !e.f["sq:" + t.id] && (!t.after || !!e.f["sqd:" + t.after]) && (!t.gate || api._p(e, t.gate))
-  );
+  if (
+    e.f["sq:" + t.id] ||
+    e.f["sqd:" + t.id] ||
+    (t.after && !e.f["sqd:" + t.after]) ||
+    (t.gate && !api._p(e, t.gate))
+  )
+    return !1;
+  for (let q of api.Qi)
+    if (q.giver === t.giver && q.id !== t.id && e.f["sq:" + q.id] && !e.f["sqd:" + q.id]) return !1;
+  return !0;
 };
 
 api.Ci = function Ci(e, t) {

@@ -21,6 +21,7 @@ api.Ks = function Ks(e, t, n, i) {
     t === 28 && e.f.cem && !e.f.maze && ((e.f.maze = !0), (e.dirty = !0)),
     t === 29 && e.f.maze && !e.f.ante && ((e.f.ante = !0), (e.dirty = !0)),
     e.f["vz:" + t] || ((e.f["vz:" + t] = !0), (e.dirty = !0)));
+  api.paintBridges && api.paintBridges(e);
   let r = api.qe[t];
   ((e.camX = n), (e.camY = i), (e.layerDirty = !0), (e.sw = [0, 0, 0]), (e.enemies = []));
   for (let s of r.spawns) {

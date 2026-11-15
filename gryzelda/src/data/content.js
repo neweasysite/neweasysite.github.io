@@ -117,7 +117,7 @@ api.initData = function initData() {
       after: "kam2",
       ask: "Mam jeszcze si\u0142\u0119 na papierologi\u0119",
       offer:
-        "Deski Zdzicha stoją na drodze, ale w ewidencji mostu nie ma. Składam wniosek, żeby samowola stała się inwestycją. Potrzebuję trzech załączników: opinii Naczelnika Piotra, harmonogramu od zegarmistrza Horacego z wieży i opinii środowiskowej od Pustelnika Mirka z Bagien. Potem komisja zada pytania kontrolne, a ja mam już za mało kawy we krwi.",
+        "Pierwszy most Zdzicha stoi na głównej drodze. Wschodnia, ta niższa, dalej jest wodą. Składam wniosek, żeby i tam poszły deski, bez szukania ich po łące. Potrzebuję trzech załączników: opinii Naczelnika Piotra, harmonogramu od zegarmistrza Horacego z wieży i opinii środowiskowej od Pustelnika Mirka z Bagien. Potem komisja zada pytania kontrolne, a ja mam już za mało kawy we krwi.",
       accept:
         "Kolejno\u015B\u0107 dowolna, byle wszystkie trzy. Mirek mieszka na Po\u0142udniowych Bagnach i rozmawia z lud\u017Ami raz w roku. Masz szcz\u0119\u015Bcie, ten rok jeszcze trwa.",
       prog: "Za\u0142\u0105czniki: {s}/3. Komisja czeka. Ja czekam na kaw\u0119.",
@@ -145,7 +145,7 @@ api.initData = function initData() {
       wrong:
         "Komisja kr\u0119ci nosem. Spr\xF3bujmy jeszcze raz od pocz\u0105tku, tym razem z kaw\u0105.",
       turn: "Mam za\u0142\u0105czniki, czas na komisj\u0119",
-      done: "Wniosek przyjęty. Te trzy deski teraz istnieją też na papierze. Prawdziwy most — w następnej perspektywie. Masz 90 groszy i punkt. Awansowałaś na moją ulubioną petentkę.",
+      done: "Wniosek przyjęty. Na wschodniej drodze, tej niższej, stoi drugi most. Desek drugi raz nie nosisz, papier je położył. Masz 90 groszy i punkt. Awansowałaś na moją ulubioną petentkę.",
       reward: { c: 90, xp: 90, p: 1 },
       steps: [
         {
@@ -315,6 +315,7 @@ api.initData = function initData() {
       id: "zdz1",
       name: "Zaginiony pacho\u0142ek",
       giver: "zdzich",
+      after: "kamMost",
       ask: "Czemu pan tak smutno patrzy na drog\u0119?",
       offer:
         "Bo zgubi\u0142em pacho\u0142ek! Pomara\u0144czowy, w paski, jedyny w gminie. Gluty go wytoczy\u0142y w stron\u0119 Lasu Szept\xF3w. Grzybiarz Edek tam \u0142azi od \u015Bwitu, mo\u017Ce co\u015B widzia\u0142. Bez pacho\u0142ka wszyscy wpadaj\u0105 w dziur\u0119.",
@@ -913,6 +914,7 @@ api.initData = function initData() {
       id: "wan1",
       name: "Z\u0142om na kowad\u0142o",
       giver: "wanda",
+      after: "spin1",
       gate: ["seal"],
       ask: "Potrzebuje pani czegoś na kowadło?",
       offer:
@@ -1131,9 +1133,9 @@ api.initData = function initData() {
       giver: "zdzich",
       ask: "Czemu pan tak patrzy w stronę łąki?",
       offer:
-        "Bo droga się tam urywa. Kładki zgniły, została rzeka. Wyciąłem trzy deski i zostawiłem je na drodze, po tej stronie, przy samym brzegu. Widać je ze ścieżki. Zanieś je Kamili. Ja niosę łopatę, ona niesie pieczątkę.",
+        "Bo droga się tam urywa. Kładki zgniły, została rzeka. Trzy deski leżą na zachodniej drodze, zaraz za wsią, zanim droga w ogóle skręci do wody. Nie przy moście, mostu nie ma. Zanieś je Kamili. Ja niosę łopatę, ona niesie pieczątkę.",
       accept:
-        "Na drodze, tam gdzie ścieżka dochodzi do wody. Nie w krzakach. Jak Kamila podpisze, wróć do mnie. Deski kładę ja, nie ona.",
+        "Zachodnia droga, tuż po wejściu na łąkę. Widać je z ścieżki. Jak Kamila podpisze, wróć do mnie. Dopiero wtedy kładę deski na głównej drodze.",
       prog: "Deski leżą na drodze albo Kamila jeszcze nie stempluje.",
       turn: "Kamila podpisała odbiór",
       done: "Podpis jest. Kładę trzy deski tam, gdzie droga urywała się na wodzie. Możesz iść. To nie jest most docelowy. To trzy deski.",
@@ -1142,12 +1144,12 @@ api.initData = function initData() {
         {
           t: "item",
           z: 1,
-          tx: 27,
-          ty: 8,
+          tx: 8,
+          ty: 15,
           name: "Trzy deski",
           ic: "deski",
-          hint: "Łąka Czekania: droga do rzeki, na ścieżce, zachodni brzeg",
-          fin: "Deski, na drodze, nie za drzewem. Kamila ma je tylko podpisać.",
+          hint: "Łąka Czekania: zachodnia droga, zaraz za wsią, daleko od rzeki",
+          fin: "Deski. Leżały na zachodzie, nie przy wodzie. Kamila ma je tylko podpisać.",
         },
         {
           t: "talk",
