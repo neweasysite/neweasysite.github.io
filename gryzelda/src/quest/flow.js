@@ -30,7 +30,14 @@ api.Zo = function Zo(e) {
   }
   return t.king
     ? t.seal
-      ? t.lever1
+      ? !api.northOpen(e)
+        ? {
+            text: "Przyłóż Pieczęć Lasu do północnej bramy Wioski. Sama się nie otworzy.",
+            zone: 0,
+            x: 24,
+            y: 2,
+          }
+        : t.lever1
         ? t.plate
           ? t.gate
             ? t.key
@@ -86,20 +93,20 @@ api.Zo = function Zo(e) {
                                       }
                                     : t.maze
                                       ? {
-                                          text: "Labirynt Firewalli: id\u017A wykut\u0105 \u015Bcie\u017Ck\u0105 na wsch\xF3d, do Przedpokoju Roota.",
+                                          text: "Za Cmentarzem: id\u017A wykut\u0105 \u015Bcie\u017Ck\u0105 na wsch\xF3d, do Przedpokoju Roota.",
                                           zone: 29,
                                           x: 11,
                                           y: 10,
                                         }
                                       : t.cem
                                         ? {
-                                            text: "Cmentarzysko za tob\u0105. Wschodnia brama prowadzi do Labiryntu Firewalli.",
+                                            text: "Cmentarzysko Ticket\xF3w: na wsch\xF3d do Labiryntu Firewalli albo na po\u0142udnie przez Fabryk\u0119 Spamu. Obie drogi ko\u0144cz\u0105 si\u0119 w Przedpokoju Roota.",
                                             zone: 28,
                                             x: 10,
                                             y: 14,
                                           }
                                         : {
-                                            text: "Akt 3: z Sali Eskalacji na po\u0142udnie, przez Serce Kolejki, na Cmentarzysko Ticket\xF3w. Strza\u0142ka nie staje \u2014 prowadzi dalej.",
+                                            text: "Akt 3: przez krat\u0119 na po\u0142udniu Sali Eskalacji do Serca Kolejki, stamt\u0105d wschodnim wyj\u015Bciem na Cmentarzysko Ticket\xF3w.",
                                             zone: 26,
                                             x: 20,
                                             y: 12,
@@ -110,12 +117,26 @@ api.Zo = function Zo(e) {
                                     x: 16,
                                     y: 10,
                                   }
-                              : {
-                                  text: "Oba klucze masz! Wejd\u017A w portal V w Call Center Cieni.",
-                                  zone: 12,
-                                  x: 24,
-                                  y: 18,
-                                }
+                              : !t.westDone
+                                ? {
+                                    text: "Manifest masz. Oddaj go Naczelnikowi Piotrowi w Wiosce \u2014 bez jego stempla portal nie ruszy.",
+                                    zone: 0,
+                                    x: 6,
+                                    y: 18,
+                                  }
+                                : !t.southDone
+                                  ? {
+                                      text: "Odznak\u0119 masz. Oddaj j\u0105 Analityczce Basi w Wiosce \u2014 dopiero wtedy portal za\u015Bwieci.",
+                                      zone: 0,
+                                      x: 28,
+                                      y: 27,
+                                    }
+                                  : {
+                                      text: "Piotr i Basia podpisali. Wejd\u017A w zielony portal V w Call Center Cieni.",
+                                      zone: 12,
+                                      x: 24,
+                                      y: 18,
+                                    }
                           : t.southQ
                             ? t.phantom
                               ? {
@@ -225,13 +246,14 @@ api.Zo = function Zo(e) {
         };
 };
 
-api.ch = function ch(e, t) {
+api.ch = function ch(e, t, st) {
   if (e === t) return null;
   let n = { [e]: null },
     i = [e];
   for (; i.length;) {
     let s = i.shift();
-    for (let u of api.qe[s].exits) u.to in n || ((n[u.to] = { z: s, e: u }), i.push(u.to));
+    for (let u of api.qe[s].exits)
+      u.to in n || (st && !api.exitOpen(st, s, u)) || ((n[u.to] = { z: s, e: u }), i.push(u.to));
   }
   if (!(t in n)) return null;
   let a = t,
@@ -443,7 +465,7 @@ api.Ff = function Ff(e) {
   let t = api.navGoal(e);
   if (t.zone < 0) return null;
   if (t.zone !== e.zone) {
-    let n = api.ch(e.zone, t.zone);
+    let n = api.ch(e.zone, t.zone, e) || api.ch(e.zone, t.zone);
     return n ? { x: ((n.x0 + n.x1) / 2) * api.T + 8, y: ((n.y0 + n.y1) / 2) * api.T + 8 } : null;
   }
   let n = t.x,
@@ -760,15 +782,23 @@ api.Zp = function Zp(e, t) {
                   ? { label: a.turn, go: "sq:" + a.id + ":q0" }
                   : { label: a.turn, act: (s) => (api.Fp(s, a), "sq:" + a.id + ":done") },
               )
-            : n.push(
-                a.prog
-                  .replace("{n}", String(e.f["sqk:" + a.id] || 0))
-                  .replace("{s}", String(api.Aa(e, a))),
-              )));
+            : n.push(api.progLine(e, a))));
     let r = api.Ci(e, a);
     r && r.t === "talk" && r.to === t && i.push({ label: r.ask, go: "sq:" + a.id + ":to" });
   }
   return { lines: n, opts: i };
+};
+
+/* Linia postępu: licznik zabić tylko, gdy bieżący krok to naprawdę zabijanie. */
+api.progLine = function progLine(e, a) {
+  let st = api.Ci(e, a);
+  if (st && st.t !== "kill" && a.prog.indexOf("{n}") >= 0)
+    return st.t === "item"
+      ? "Teraz szukam: " + st.name + (st.hint ? " \u2014 " + st.hint + "." : ".")
+      : "Teraz: " + (st.hint || "porozmawiaj, z kim trzeba") + ".";
+  return a.prog
+    .replace("{n}", String(e.f["sqk:" + a.id] || 0))
+    .replace("{s}", String(api.Aa(e, a)));
 };
 
 api.oh = function oh(e) {

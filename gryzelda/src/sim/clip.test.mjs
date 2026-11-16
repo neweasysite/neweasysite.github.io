@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { api } from "../runtime/api.js";
 import "../world/build.js";
 import "../world/crypt.js";
+import "../world/fixes.js";
 import "../world/query.js";
 import "../world/travel.js";
 import "./clip.js";
@@ -126,9 +127,12 @@ test("combat actually skips damage on the wool scarf", () => {
 
 test("sixteen hooks, the piles included, none missing", () => {
   assert.deepEqual(api.clipMiss, []);
-  assert.equal(api.clips.length, 16);
-  let rewards = api.clips.filter((h) => h.reward !== "coin" && h.reward !== "moor");
-  assert.equal(rewards.length, 7);
+  let main = api.clips.filter((h) => !h.back);
+  assert.equal(main.length, 16);
+  assert.equal(api.clips.filter((h) => h.back).length, 13);
+  let rewards = main.filter((h) => h.reward !== "coin" && h.reward !== "moor");
+  assert.equal(rewards.length, 14);
+  assert.equal(main.filter((h) => h.reward === "coin").length, 0);
   assert.equal(api.clips.filter((h) => h.reward === "moor").length, 2);
   for (let h of api.clips) {
     let tile = api.qe[h.z].t[h.y][h.x];

@@ -148,7 +148,32 @@ const REWARDS = {
   gniazdo: "glut",
   palE: "moor",
   palW: "moor",
+  plot: "skarpeta",
+  dach: "zeszyt",
+  row: "butelka",
+  hals: "swieca",
+  wies: "jajko",
+  ruina: "tabliczka",
+  bagno: "termos",
 };
+
+/* Kryjówki za przeszkodą: hak stoi w miejscu, do którego nie da się dojść.
+   dx,dy wskazuje stronę, z której się rzuca; tam stoi drugi hak na powrót. */
+api.clipPockets = [
+  { id: "slupek", z: 9, x: 18, y: 14, dx: -1, dy: 0, d: 3, ring: "r" },
+  { id: "polka", z: 10, x: 18, y: 6, dx: -1, dy: 0, d: 3, ring: "K" },
+  { id: "balkon", z: 30, x: 8, y: 2, dx: 0, dy: 1, d: 3, ring: "K" },
+  { id: "nisza", z: 47, x: 2, y: 7, dx: 1, dy: 0, d: 3, ring: "r" },
+  { id: "zagroda", z: 43, x: 8, y: 6, dx: 0, dy: 1, d: 3, ring: "r" },
+  { id: "gniazdo", z: 2, x: 26, y: 28, dx: 1, dy: 0, d: 3, ring: "t", extra: [[26, 27]] },
+  { id: "plot", z: 0, x: 10, y: 5, dx: 0, dy: 1, d: 3, ring: "t" },
+  { id: "dach", z: 6, x: 4, y: 2, dx: 0, dy: 1, d: 2, ring: "K" },
+  { id: "row", z: 9, x: 36, y: 18, dx: -1, dy: 0, d: 3, ring: "w" },
+  { id: "hals", z: 52, x: 2, y: 4, dx: 1, dy: 0, d: 3, ring: "r" },
+  { id: "wies", z: 38, x: 14, y: 18, dx: 0, dy: -1, d: 3, ring: "t" },
+  { id: "ruina", z: 4, x: 12, y: 10, dx: 1, dy: 0, d: 3, ring: "r" },
+  { id: "bagno", z: 11, x: 23, y: 11, dx: -1, dy: 0, d: 3, ring: "w" },
+];
 
 api.clipSpecs = [
   { id: "palE", z: 1, x: 33, y: 5, lock: !0 },
@@ -168,6 +193,34 @@ api.clipSpecs = [
   { id: "ruina", z: 4, x: 12, y: 10 },
   { id: "bagno", z: 11, x: 18, y: 10 },
 ];
+
+function walkable(tile) {
+  return tile === "." || tile === "," || tile === ":" || tile === "b" || tile === "t" || tile === "r" || tile === "c";
+}
+
+export function buildPocket(pk) {
+  let zone = api.qe[pk.z];
+  if (!zone) return null;
+  let cells = [[pk.x, pk.y], ...(pk.extra || [])],
+    isCell = (x, y) => cells.some((c) => c[0] === x && c[1] === y),
+    lx = pk.x + pk.dx * pk.d,
+    ly = pk.y + pk.dy * pk.d;
+  for (let [x, y] of cells) zone.t[y][x] = ".";
+  for (let [cx, cy] of cells)
+    for (let y = cy - 1; y <= cy + 1; y++)
+      for (let x = cx - 1; x <= cx + 1; x++) {
+        if (isCell(x, y) || !zone.t[y] || zone.t[y][x] == null) continue;
+        walkable(zone.t[y][x]) && (zone.t[y][x] = pk.ring);
+      }
+  for (let k = 1; k < pk.d; k++) {
+    let x = pk.x + pk.dx * k,
+      y = pk.y + pk.dy * k;
+    walkable(zone.t[y][x]) && (zone.t[y][x] = pk.ring);
+  }
+  let lt = zone.t[ly][lx];
+  (soft(lt) || lt === "c") && (zone.t[ly][lx] = ".");
+  return { x: lx, y: ly };
+}
 
 function soft(tile) {
   return tile === "t" || tile === "," || tile === "b" || tile === "r";
@@ -254,8 +307,12 @@ api.placeClips = function placeClips() {
   sealRiver(meadow);
   api.clips = [];
   api.clipMiss = [];
+  let backs = {};
+  for (let pk of api.clipPockets) backs[pk.id] = buildPocket(pk);
   for (let spec of api.clipSpecs) {
-    let at = snap(spec);
+    let pk = api.clipPockets.find((p) => p.id === spec.id);
+    if (pk) ((spec.x = pk.x), (spec.y = pk.y), (spec.lock = !0));
+    let at = pk ? { x: pk.x, y: pk.y } : snap(spec);
     if (!at) {
       api.clipMiss.push(spec.id);
       continue;
@@ -269,6 +326,9 @@ api.placeClips = function placeClips() {
       y: at.y,
       reward: REWARDS[spec.id] || "coin",
     });
+    let b = backs[spec.id];
+    b &&
+      api.clips.push({ id: spec.id + "Back", z: spec.z, x: b.x, y: b.y, reward: "back", back: !0 });
   }
   let lie = api.qe[11];
   api.clipLie = { z: 11, x: 22, y: 20 };
@@ -316,12 +376,49 @@ api.clipArrive = function clipArrive(e, hook) {
     live && ((live.x1 = 28), (live.y0 = 10), (live.gx = api.Y(24)), (live.gy = api.Y(20)));
     return say(e, "Dzyń. Beczka schodzi z belki na łąkę, jakby to było w grafiku.");
   }
+  if (hook.back) return;
   if (hook.reward === "glut") return api.clipGlut(e, hook);
   if (e.f["clip:" + hook.id]) return;
   e.f["clip:" + hook.id] = !0;
   e.dirty = !0;
-  if (hook.reward === "moor")
-    return say(e, "Pal cumowniczy. Spinacz trzyma. Mostu tu nie ma, rzeka płynie dalej.");
+  if (hook.reward === "moor") {
+    if (hook.id === "palE") {
+      e.coins = (e.coins || 0) + 8;
+      return say(e, "Pal cumowniczy na wschodnim brzegu. Na gwoździu siatka Ryśka: 8 groszy i robak, który też czeka na swoją kolej.");
+    }
+    return say(e, "Pal na zachodnim brzegu. Wyryte w drewnie: „Tu był Zdzich. Kładka będzie w przyszłym kwartale.” Którym, nie napisał.");
+  }
+  if (hook.reward === "skarpeta") {
+    e.coins = (e.coins || 0) + 15;
+    return say(e, "Między chałupami, za żywopłotem: skarpeta Bogdana z oszczędnościami. 15 groszy. Bogdan liczy je co rano i co rano wychodzi mu inaczej.");
+  }
+  if (hook.reward === "zeszyt") {
+    e.coins = (e.coins || 0) + 10;
+    e.pts = (e.pts || 0) + 1;
+    return say(e, "Za ladą Mietka: zeszyt długów całej wsi. Twoje nazwisko ktoś skreślił. +1 punkt rozwoju, 10 groszy z szuflady na „drobne różnice”.");
+  }
+  if (hook.reward === "butelka") {
+    e.coins = (e.coins || 0) + 20;
+    return say(e, "Wysepka na rowie. W butelce list: „Zgłoszenie przyjęte. Rok 1997.” I 20 groszy na znaczek, którego nikt nie wysłał.");
+  }
+  if (hook.reward === "swieca") {
+    e.bonusMp = (e.bonusMp || 0) + 2;
+    e.mp = api.ut ? api.ut(e) : e.mp;
+    return say(e, "Nisza za gruzem: świeca, która nie gaśnie, bo nikt nie podpisał zgody na zgaszenie. +2 maks. many na stałe.");
+  }
+  if (hook.reward === "jajko") {
+    e.coins = (e.coins || 0) + 20;
+    return say(e, "W żywopłocie gniazdo, w gnieździe drewniane jajko, w jajku 20 groszy i karteczka: „NIE MÓWCIE WICKOWI”.");
+  }
+  if (hook.reward === "tabliczka") {
+    e.pts = (e.pts || 0) + 1;
+    return say(e, "Pod gruzem tabliczka: „Kolejka Zgłoszeń. Założona przed światem. Świat dopisano później”. +1 punkt rozwoju za cierpliwość.");
+  }
+  if (hook.reward === "termos") {
+    e.coins = (e.coins || 0) + 15;
+    e.hp = api.Ze ? api.Ze(e) : e.hp;
+    return say(e, "Wysepka na bagnie: termos Mirka. Kawa jeszcze ciepła, choć Mirek twierdzi, że to było dwa lata temu. Zdrowie do pełna, 15 groszy.");
+  }
   if (hook.reward === "coin") {
     e.coins = (e.coins || 0) + 3;
     return say(e, "Za hakiem trzy grosze. Reszta to skrót.");

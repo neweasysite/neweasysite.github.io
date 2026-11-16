@@ -226,6 +226,8 @@ const NPC_LINE = {
   filip: "Au! Ja jestem prawie dorosły!",
   ola: "Zostaw stado.",
   rysiek: "Ryby nie, ja też nie.",
+  czeslaw: "Termin minął, ale wiosło zostało.",
+  wladek: "Zgłoszę to.",
   edek: "Grzyby są grzeczniejsze.",
   mirek: "Cisza. I krok w tył.",
   jadzia: "Babci się nie macha.",
