@@ -980,74 +980,75 @@ api.Qf = function Qf() {
       {
         id: "arm1",
         name: "Sk\xF3rzany kubrak",
-        desc: "+2 maks. zdrowia (1 serce).",
-        cost: 25,
+        desc: "Ranga 1: +2 maks. zdrowia. Rangi 2 i 3: po +1 (Wanda dok\u0142ada \u0142atki).",
+        costs: [40, 90, 150],
         need: "",
         ok: () => !0,
       },
       {
         id: "edge1",
         name: "Naostrzenie broni I",
-        desc: "+15% obra\u017Ce\u0144 ka\u017Cdej broni.",
-        cost: 20,
+        desc: "Ranga 1: +15% obra\u017Ce\u0144 ka\u017Cdej broni. Rangi 2 i 3: po +5%.",
+        costs: [35, 80, 140],
         need: "",
         ok: () => !0,
       },
       {
         id: "edge2",
         name: "Wywa\u017Cenie broni II",
-        desc: "Kolejne +15% obra\u017Ce\u0144.",
-        cost: 45,
+        desc: "Ranga 1: kolejne +15% obra\u017Ce\u0144. Rangi 2 i 3: po +5%.",
+        costs: [70, 150, 250],
         need: "Przynie\u015B \u017Cywic\u0119 Kr\xF3la Glut\xF3w (pokonaj go).",
         ok: (m) => !!m.f.king,
       },
       {
         id: "arm2",
         name: "Kolczuga z drutu modemowego",
-        desc: "+3 maks. zdrowia.",
-        cost: 60,
+        desc: "Ranga 1: +3 maks. zdrowia. Rangi 2 i 3: po +1.",
+        costs: [95, 200, 330],
         need: "Wanda potrzebuje odcisku Piecz\u0119ci Lasu.",
         ok: (m) => !!m.f.seal,
       },
       {
         id: "edge3",
         name: "Hartowanie III",
-        desc: "Kolejne +15% obra\u017Ce\u0144.",
-        cost: 90,
+        desc: "Ranga 1: kolejne +15% obra\u017Ce\u0144. Rangi 2 i 3: po +5%.",
+        costs: [140, 290, 480],
         need: "Wymaga stali z Ruin (poci\u0105gnij d\u017Awigni\u0119 w Ruinach).",
         ok: (m) => !!m.f.lever1,
       },
       {
         id: "arm3",
         name: "Pancerz z etykiet paczek",
-        desc: "+4 maks. zdrowia.",
-        cost: 80,
+        desc: "Ranga 1: +4 maks. zdrowia. Rangi 2 i 3: po +2.",
+        costs: [130, 270, 450],
         need: "Przynie\u015B Manifest Paczek z Depotu.",
         ok: (m) => !!m.f.westKey,
       },
       {
         id: "edge4",
         name: "Ostrzenie SLA IV",
-        desc: "Kolejne +15% obra\u017Ce\u0144.",
-        cost: 110,
+        desc: "Ranga 1: kolejne +15% obra\u017Ce\u0144. Rangi 2 i 3: po +5%.",
+        costs: [175, 360, 600],
         need: "Wymaga Odznaki Eskalacji z Call Center.",
         ok: (m) => !!m.f.southKey,
       },
       {
         id: "rootEdge",
         name: "Hart Root",
-        desc: "+20% obra\u017Ce\u0144, przebija tarcze jak Ostrze Eskalacji.",
-        cost: 150,
+        desc: "Ranga 1: +15% obra\u017Ce\u0144 i przebija tarcze jak Ostrze Eskalacji. Rangi 2 i 3: po +5%.",
+        costs: [240, 480, 800],
         need: "Token Root Access (po Lichwie).",
         ok: (m) => !!m.f.rootTok,
       },
-    ],
+    ].map((m) => Object.defineProperty(m, "cost", { get: () => m.costs[Math.min(2, p ? api.forgeRank(p, m.id) : 0)] })),
     E2 = (m) => {
       if (!p) return;
       let I = er.find((J) => J.id === m);
-      if (!I || p.f[m] || !I.ok(p) || p.coins < I.cost) return;
+      if (!I || api.forgeRank(p, m) >= api.forgeMax || !I.ok(p) || p.coins < I.cost) return;
       let A = api.Ze(p);
       ((p.coins -= I.cost),
+        (p.f["rk:" + m] = api.forgeRank(p, m) + 1),
         (p.f[m] = !0),
         (p.hp += api.Ze(p) - A),
         api.se(p, p.px, p.py, "#ffd84a", 24, 70, 0.7),
@@ -1057,7 +1058,8 @@ api.Qf = function Qf() {
     },
     ld = (m, I) => {
       if (!p) return null;
-      let A = !!p.f[m.id],
+      let rk = api.forgeRank(p, m.id),
+        A = rk >= api.forgeMax,
         J = A
           ? ""
           : m.ok(p)
@@ -1073,7 +1075,10 @@ api.Qf = function Qf() {
             (0, api.h.jsxs)("div", {
               style: { minWidth: 0 },
               children: [
-                (0, api.h.jsx)("div", { style: Kt, children: m.name }),
+                (0, api.h.jsx)("div", {
+                  style: Kt,
+                  children: m.name + " \xB7 ranga " + rk + "/" + api.forgeMax,
+                }),
                 (0, api.h.jsx)("div", { style: Qt, children: m.desc }),
                 !A &&
                   (0, api.h.jsx)("div", {
@@ -1088,7 +1093,7 @@ api.Qf = function Qf() {
             }),
             (0, api.h.jsx)("div", {
               children: A
-                ? Je("\u2713 MASZ", E.green)
+                ? Je("\u2713 MAKS.", E.green)
                 : I
                   ? (0, api.h.jsx)("button", {
                       style: $a(!J),
@@ -1152,17 +1157,23 @@ api.Qf = function Qf() {
                       ? "Root i audyt zamkni\u0119te. Kolejka \u015Bpiewa z rado\u015Bci. Id\u017A, odpocznij \u2014 albo szukaj sekret\xF3w."
                       : "Root przyj\u0119ty, ale Archiwum Milczenia na wschodzie Serwerowni jeszcze warczy. AUDYT-BOT nie odpuszcza."
                     : p.f.act2
-                      ? p.f.westKey && p.f.southKey
-                        ? "Portal w Call Center Cieni powinien \u015Bwieci\u0107. Nieumar\u0142y Support czeka."
-                        : p.f.westKey
-                          ? "Manifest masz. Teraz Basia na po\u0142udniu \u2014 Bagna SLA."
-                          : p.f.southKey
-                            ? "Odznaka jest. Piotr na zachodzie wci\u0105\u017C czeka na Manifest."
-                            : "Piotr na zachodzie Wioski, Basia na po\u0142udniu. Obaj maj\u0105 klucze do portalu."
+                      ? p.f.westDone && p.f.southDone
+                        ? "Piotr i Basia podpisali. Portal w Call Center Cieni powinien \u015Bwieci\u0107. Nieumar\u0142y Support czeka."
+                        : p.f.westKey && !p.f.westDone
+                          ? "Manifest masz? To czemu jeszcze nie le\u017Cy u Piotra na zachodzie Wioski? Portal bez stempla nie ruszy."
+                          : p.f.southKey && !p.f.southDone
+                            ? "Odznaka jest? Zanie\u015B j\u0105 Basi na po\u0142udniu Wioski, bo portal czeka na jej podpis."
+                            : p.f.westDone
+                              ? "Piotr zadowolony. Teraz Basia na po\u0142udniu \u2014 Bagna SLA."
+                              : p.f.southDone
+                                ? "Basia zadowolona. Piotr na zachodzie wci\u0105\u017C czeka na Manifest."
+                                : "Piotr na zachodzie Wioski, Basia na po\u0142udniu. Oboje maj\u0105 klucze do portalu."
                       : p.f.boss
                         ? "S\u0142ysza\u0142em huk z Serwerowni. Dumny jestem jak kapliczka po remoncie."
                         : p.f.seal
-                          ? "Piecz\u0119\u0107! P\xF3\u0142nocna brama Wioski otwarta. W Ruinach czekaj\u0105 d\u017Awignie, blok i kryszta\u0142y. Wanda w ku\u017Ani zrobi ci co\u015B mocniejszego."
+                          ? api.northOpen(p)
+                            ? "P\xF3\u0142nocna brama otwarta, pieczęć siedzi w zamku. W Ruinach czekaj\u0105 d\u017Awignie, blok i kryszta\u0142y. Wanda w ku\u017Ani zrobi ci co\u015B mocniejszego."
+                            : "Piecz\u0119\u0107! Przy\u0142\xF3\u017C j\u0105 do p\xF3\u0142nocnej bramy Wioski \u2014 zamek ma dok\u0142adnie jej kszta\u0142t. Za bram\u0105 s\u0105 Ruiny."
                           : p.f.king
                             ? "Kr\xF3l Glut\xF3w pokonany? To gdzie Piecz\u0119\u0107? W ka\u0142u\u017Cy po nim, jak znam glutowe zwyczaje."
                             : p.f.cellarDone
@@ -1761,7 +1772,7 @@ api.Qf = function Qf() {
               U())
             : X === "shop"
               ? (K(
-                  "Ulepszenia s\u0105 na sta\u0142e. Lepsze rzeczy wymagaj\u0105 materia\u0142\xF3w, kt\xF3re zdob\u0119dziesz po drodze.",
+                  "Ulepszenia s\u0105 na sta\u0142e i maj\u0105 po trzy rangi. Ka\u017Cda kolejna kosztuje wi\u0119cej, bo stal dro\u017Ceje szybciej ni\u017C kawa w automacie.",
                 ),
                 (V = (0, api.h.jsxs)(api.h.Fragment, {
                   children: [
@@ -1791,10 +1802,17 @@ api.Qf = function Qf() {
           ? p.f.act2
             ? p.f.westKey
               ? (K(
-                  "Manifest! Piecz\u0119\u0107 pocztowa znowu ma sens. Masz 40 groszy i punkt. Id\u017A do Basi na po\u0142udnie, je\u015Bli jeszcze nie masz Odznaki.",
+                  p.f.westDone
+                    ? p.f.southDone
+                      ? "Manifest wisi w ramce nad okienkiem. Portal ma ju\u017C oba stemple \u2014 id\u017A, zanim kto\u015B zg\u0142osi reklamacj\u0119."
+                      : "Manifest podbity. Teraz Basia na po\u0142udniu Wioski \u2014 bez jej podpisu portal nie ruszy."
+                    : (p.f.westQ ? "Manifest! " : "Manifest?! Nawet nie zd\u0105\u017Cy\u0142em ci\u0119 o niego poprosi\u0107. ") +
+                        "Piecz\u0119\u0107 pocztowa znowu ma sens. Masz 40 groszy i punkt." +
+                        (p.f.southDone ? " Basia ju\u017C podpisa\u0142a \u2014 portal V \u015Bwieci." : " Basia na po\u0142udniu Wioski czeka na Odznak\u0119."),
                 ),
                 p.f.westDone ||
                   ((p.f.westDone = !0),
+                  (p.f.westQ = !0),
                   (p.coins += 40),
                   (p.pts += 1),
                   (p.dirty = !0),
@@ -1834,10 +1852,17 @@ api.Qf = function Qf() {
           ? p.f.act2
             ? p.f.southKey
               ? (K(
-                  "Odznaka Eskalacji! M\xF3j dashboard wreszcie zielony. 40 groszy i punkt. Portal w Call Center Cieni \u2014 zielone V.",
+                  p.f.southDone
+                    ? p.f.westDone
+                      ? "Dashboard zielony, portal te\u017C. Zielone V w Call Center Cieni czeka."
+                      : "Odznak\u0119 mam. Teraz Piotr na zachodzie Wioski i jego Manifest \u2014 inaczej portal zostanie szary."
+                    : (p.f.southQ ? "Odznaka Eskalacji! " : "Odznaka Eskalacji? Sama przysz\u0142a, zanim zd\u0105\u017Cy\u0142am otworzy\u0107 zg\u0142oszenie. ") +
+                        "M\xF3j dashboard wreszcie zielony. 40 groszy i punkt." +
+                        (p.f.westDone ? " Piotr ju\u017C podbi\u0142 Manifest \u2014 portal V w Call Center \u015Bwieci." : " Piotr na zachodzie Wioski czeka na Manifest."),
                 ),
                 p.f.southDone ||
                   ((p.f.southDone = !0),
+                  (p.f.southQ = !0),
                   (p.coins += 40),
                   (p.pts += 1),
                   (p.dirty = !0),
@@ -1859,7 +1884,7 @@ api.Qf = function Qf() {
                 B("southjob", "Na co uwa\u017Ca\u0107?"),
                 U())
             : (K(
-                "Basia, analityczka SLA. Bagna na po\u0142udniu przekraczaj\u0105 timeout. Wr\xF3\u0107, gdy Bogdan og\u0142osi Act 2 \u2014 znaczy, gdy Kryszta\u0142 znowu zawiedzie.",
+                "Basia, analityczka SLA. Bagna na po\u0142udniu przekraczaj\u0105 timeout. Wr\xF3\u0107, gdy Bogdan og\u0142osi Akt 2 \u2014 znaczy, gdy Kryszta\u0142 znowu zawiedzie.",
               ),
               U())
           : X === "southjob"
@@ -1908,9 +1933,11 @@ api.Qf = function Qf() {
       else if (m === "horacy")
         X === ""
           ? (K(
-              "Tik-tak... Horacy, zegarmistrz. Wieża tyka, bo ja ją nakręcam — nie dlatego, że świat jest punktualny." +
+              (p.f.gearDone
+                ? "Tik-tak! Horacy, zegarmistrz. Wieża znów chodzi równo jak urzędnik przed fajrantem. Dzięki tobie."
+                : "Tyk... tyk... Horacy, zegarmistrz. Wieża ledwo dycha: co rano nakręcam ją ręcznie, a i tak spóźnia się o kwadrans.") +
                 (p.f.bogdan && !p.f.gearQ
-                  ? " Przy ostatniej burzy wiatrak na Łące połknął główną zębatkę. Od tamtej pory wieża spóźnia się o kwadrans."
+                  ? " Przy ostatniej burzy wiatrak na Łące połknął główną zębatkę."
                   : ""),
             ),
             p.f.bogdan && !p.f.gearQ && B("gears", "Czemu zegar sp\xF3\u017Ania?"),
@@ -2161,7 +2188,7 @@ api.Qf = function Qf() {
           ["Otw\xF3rz drzwi do Serwerowni", !!m.door],
           ["Pokonaj SUPPORT-BOTA 3000", !!m.boss],
           ["Dotknij Kryszta\u0142u Odpowiedzi", !!m.won],
-          ["Rozpocznij Act 2 u Bogdana", !!m.act2],
+          ["Rozpocznij Akt 2 u Bogdana", !!m.act2],
           ["Zdob\u0105d\u017A Manifest Paczek (zach\xF3d)", !!m.westKey],
           ["Zdob\u0105d\u017A Odznak\u0119 Eskalacji (po\u0142udnie)", !!m.southKey],
           ["Wejd\u017A do Krainy Nieumar\u0142ego Supportu", !!m.undead],
@@ -4453,7 +4480,7 @@ api.Qf = function Qf() {
                                           .map((m) => ld(m, !1)),
                                       ],
                                     }),
-                                    Je("+" + api.Dp(p) * 15 + "% obra\u017C.", E.cyan),
+                                    Je("+" + Math.round(api.Dp(p) * 15) + "% obra\u017C.", E.cyan),
                                   ),
                                 Ee(
                                   "Trwa\u0142e bonusy",
@@ -4467,10 +4494,7 @@ api.Qf = function Qf() {
                                       [
                                         "Zdrowie",
                                         "+" +
-                                          (p.bonusHp +
-                                            (p.f.arm1 ? 2 : 0) +
-                                            (p.f.arm2 ? 3 : 0) +
-                                            (p.f.arm3 ? 4 : 0)),
+                                          (p.bonusHp + api.forgeArmHp(p)),
                                       ],
                                       ["Mana", "+" + p.bonusMp],
                                     ].map((m) =>
@@ -5068,8 +5092,8 @@ api.Qf = function Qf() {
                                   : p.f.kozacki
                                     ? "Kozacki Root pad\u0142. Zanie\u015B Token do Kryszta\u0142u \u2014 dopiero wtedy \u015Bwiat b\u0119dzie uratowany."
                                     : p.f.lich
-                                      ? "Twist: Lichwa Lidia by\u0142a tylko eskalacj\u0105 Hold Music. Serce Kolejki bije dalej \u2014 strza\u0142ka prowadzi przez Cmentarzysko, Labirynt Firewalli i Przedpok\xF3j a\u017C do Kozackiego Roota."
-                                      : "Kryszta\u0142 mrugn\u0105\u0142 tylko tymczasow\u0105 odpowiedzi\u0105. To nie koniec \u2014 wr\xF3\u0107 do Bogdana. Act 2 czeka.",
+                                      ? "Twist: Lichwa Lidia by\u0142a tylko eskalacj\u0105 Hold Music. Krata na po\u0142udniu Sali Eskalacji pu\u015Bci\u0142a \u2014 za ni\u0105 bije Serce Kolejki, a dalej Cmentarzysko i Przedpok\xF3j Kozackiego Roota."
+                                      : "Kryszta\u0142 mrugn\u0105\u0142 tylko tymczasow\u0105 odpowiedzi\u0105. To nie koniec \u2014 wr\xF3\u0107 do Bogdana w Wiosce. On og\u0142osi Akt 2 i powie, kto trzyma klucze do portalu.",
                           }),
                           (0, api.h.jsxs)("div", {
                             style: { ...Lt, marginTop: 8, fontFamily: Ft },
@@ -5098,9 +5122,7 @@ api.Qf = function Qf() {
                             style: Ut,
                             onClick: () => {
                               (p &&
-                                p.f.won &&
-                                !p.f.act2 &&
-                                ((p.f.act2 = !0), (p.dirty = !0), api.fe(p)),
+                                p.f.lich && !p.f.kozacki && p.zone === 15 && api.toHeart && api.toHeart(p),
                                 (p.win = !1),
                                 Jn());
                             },
@@ -5113,8 +5135,8 @@ api.Qf = function Qf() {
                                   : p.f.kozacki
                                     ? "\u25B6 Do Kryszta\u0142u"
                                     : p.f.lich
-                                      ? "\u25B6 Act 3: za strza\u0142k\u0105"
-                                      : "\u25B6 Act 2: dalej w fabu\u0142\u0119",
+                                      ? "\u25B6 Akt 3: do Serca Kolejki"
+                                      : "\u25B6 Akt 2: wracam do Bogdana",
                           }),
                         ],
                       }),

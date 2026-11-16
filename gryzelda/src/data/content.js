@@ -8,7 +8,7 @@ function wn(target, key, value) {
 }
 
 api.initData = function initData() {
-  ((api.mk = "v1.4.5"),
+  ((api.mk = "v1.4.6"),
     (api.T = 16),
     (api.oe = 320),
     (api.de = 180),
@@ -655,16 +655,16 @@ api.initData = function initData() {
             [53, 12],
           ],
           hint: "rozlej gluty na \u0141\u0105ce Czekania",
-          fin: "Owce wychodz\u0105! Opr\xF3cz Beczki, najstarszej. Ola wo\u0142a: \u201EBeczka nie wyjdzie bez dzwonka! Gluty go zawlok\u0142y na strych M\u0142yna!\u201D",
+          fin: "Owce wychodz\u0105! Opr\xF3cz Beczki, najstarszej. Ola wo\u0142a: \u201EBeczka nie wyjdzie bez dzwonka! Gluty potoczy\u0142y go za przysi\xF3\u0142ek, a\u017C na Pastwisko za P\u0142otem. Dzwoni\u0142o gdzie\u015B w krzakach, w najdalszym rogu!\u201D",
         },
         {
           t: "item",
-          z: 33,
-          tx: 10,
-          ty: 4,
+          z: 43,
+          tx: 36,
+          ty: 3,
           name: "Dzwonek Beczki",
           ic: "dzwonek",
-          hint: "Strych M\u0142yna (M\u0142yn na \u0141\u0105ce, schody w \u015Brodku)",
+          hint: "Pastwisko za P\u0142otem, za przysi\xF3\u0142kiem: zajrzyj w krzaki w p\xF3\u0142nocno-wschodnim rogu, wej\u015Bcie od po\u0142udnia",
           fin: "Dzwonek! Dzy\u0144. Gdzie\u015B na \u0141\u0105ce owca podnios\u0142a g\u0142ow\u0119. Wracaj do Oli.",
         },
       ],
@@ -1225,9 +1225,23 @@ api.initData = function initData() {
       kuba: 2,
       rysiek: 0,
       henio: 0,
+      czeslaw: 0,
+      wladek: 1,
       hela: 2,
     }),
     (api.bp = {
+      czeslaw: [
+        "Przewo\u017Anik Czes\u0142aw. Wo\u017C\u0119 zg\u0142oszenia, kt\xF3rym min\u0105\u0142 termin. Na drug\u0105 stron\u0119 jeziora, czyli donik\u0105d.",
+        "\u0141\xF3dka? Jest w naprawie od 2009 roku. Zg\u0142oszenie w tej sprawie te\u017C przeterminowane, wi\u0119c b\u0119dzie p\u0142yn\u0105\u0107 samo.",
+        "Ka\u017Cde zg\u0142oszenie tu ko\u0144czy. Status \u201EZamkni\u0119te \u2014 brak odpowiedzi klienta\u201D. A klient sta\u0142 na pomo\u015Bcie i macha\u0142.",
+        "Skrzyni\u0119 na wschodzie wy\u0142owi\u0142em z jeziora. Bierz, bo mi zajmuje pomost. Zombiaki i tak nie umiej\u0105 otwiera\u0107 zamk\xF3w.",
+      ],
+      wladek: [
+        "W\u0142adek. Zg\u0142osi\u0142em usterk\u0119 numer jeden. Pierwsz\u0105 w historii. Status: w analizie.",
+        "Mam tu kopi\u0119 ka\u017Cdego mojego zg\u0142oszenia. Ta szafa to rok 2014. Ta ca\u0142a \u015Bciana to marzec.",
+        "Dzwoni\u0119 codziennie o \xF3smej. Oni ju\u017C znaj\u0105 m\xF3j g\u0142os. Od\u0142o\u017Cyli s\u0142uchawk\u0119 w 2017 i jeszcze nie podnie\u015Bli.",
+        "W skrzyni trzymam oryginalne zg\u0142oszenie. Je\u015Bli j\u0105 otworzysz, to jakby\u015B je rozpatrzy\u0142a. Prosz\u0119. Kto\u015B musi.",
+      ],
       zdzich: [
         "Dzie\u0144 dobry! To nie jest dziura w drodze, tylko inwestycja w toku.",
         "Pracuj\u0119 tu od rana. G\u0142\xF3wnie trzymam \u0142opat\u0119, \u017Ceby nie uciek\u0142a.",
@@ -1369,7 +1383,10 @@ api.initData = function initData() {
   api.gk();
   api.Sk();
   api.padPortals();
+  api.fixWorld();
   api.placeClips();
+  api.fixLandings();
+  api.fixSpawns();
   ((api.gp = ["Kok", "Kucyki", "Kr\xF3tkie", "Irokez", "Warkocz", "Bob", "Loki", "D\u0142ugie"]),
     (api.Of = [
       "#d9572b",
@@ -1735,6 +1752,8 @@ api.initData = function initData() {
       darek: "Kurier Darek",
       ola: "Pasterka Ola",
       rysiek: "W\u0119dkarz Rysiek",
+      czeslaw: "Przewo\u017Anik Czes\u0142aw",
+      wladek: "Zg\u0142aszacz W\u0142adek",
       edek: "Grzybiarz Edek",
       staszek: "Rolnik Staszek",
       mirek: "Pustelnik Mirek",
@@ -1758,15 +1777,29 @@ api.initData = function initData() {
       e.st.vit * 2 +
       e.bonusHp +
       (e.spec === "straz" ? 6 : 0) +
-      (e.f.arm1 ? 2 : 0) +
-      (e.f.arm2 ? 3 : 0) +
-      (e.f.arm3 ? 4 : 0)),
-    (api.Dp = (e) =>
-      (e.f.edge1 ? 1 : 0) +
-      (e.f.edge2 ? 1 : 0) +
-      (e.f.edge3 ? 1 : 0) +
-      (e.f.edge4 ? 1 : 0) +
-      (e.f.rootEdge ? 1 : 0)),
+      api.forgeArmHp(e)),
+    /* Kuźnia Wandy: każde ulepszenie ma 3 rangi.
+       Pancerz: arm1 +2/+1/+1, arm2 +3/+1/+1, arm3 +4/+2/+2 zdrowia.
+       Ostrza: ranga 1 = +15%, każda kolejna +5% (Dp liczy w jednostkach 15%). */
+    (api.forgeMax = 3),
+    (api.forgeRank = (e, id) => e.f["rk:" + id] || (e.f[id] ? 1 : 0)),
+    (api.forgeArm = { arm1: [2, 1, 1], arm2: [3, 1, 1], arm3: [4, 2, 2] }),
+    (api.forgeArmHp = (e) => {
+      let s = 0;
+      for (let id in api.forgeArm) {
+        let r = api.forgeRank(e, id);
+        for (let i = 0; i < r; i++) s += api.forgeArm[id][i];
+      }
+      return s;
+    }),
+    (api.Dp = (e) => {
+      let s = 0;
+      for (let id of ["edge1", "edge2", "edge3", "edge4", "rootEdge"]) {
+        let r = api.forgeRank(e, id);
+        r > 0 && (s += 1 + (r - 1) / 3);
+      }
+      return s;
+    }),
     (api.ut = (e) => 4 + e.st.mnd * 2 + e.bonusMp),
     (api.Rp = (e) =>
       (64 + e.st.dex * 3) * (e.buf.kawa > 0 ? 1.4 : 1) * (e.spec === "trop" ? 1.15 : 1)),
@@ -1792,15 +1825,10 @@ api.initData = function initData() {
     (api.Cn = (e) => api.qe[e.zone]));
   ((api._f = null), (api.ji = null));
   ((api.Fk = [
-    1, 1.25, 1.55, 1.7, 2.1, 2.5, 1, 1, 1.35, 2.2, 2.6, 2.4, 2.9, 3.3, 3.6, 4, 1.1, 1.1, 1.1, 1.1,
-    1.4, 1.6, 1.8, 2.4, 4.8, 5.4, 4.9, 5.1, 5.2, 5.5, 1.2, 1.15, 1.2, 1.5, 1.7, 1, 3.3, 5.8, 1.25,
-    1.1, 1.1, 2.2, 2.8, 2.6, 1.8, 1.8, 3.2, 1.8, 2, 2.2, 2.5, 2.8, 3.1, 3.4, 3.8, 4.2, 4.6, 5, 5.5,
-    6.2,
-  ]),
+      1, 1.25, 1.55, 1.7, 2.1, 2.5, 1, 1, 1.35, 2.2, 2.6, 2.4, 2.9, 3.3, 3.6, 4, 1.1, 1.1, 1.1, 1.1, 1.4, 1.6, 1.8, 2.4, 4.8, 5.4, 4.9, 5.1, 5.2, 5.5, 1.2, 1.15, 1.2, 1.5, 1.7, 1, 3.3, 5.8, 1.25, 1.1, 1.1, 2.2, 2.8, 2.6, 1.8, 1.8, 1.8, 1.8, 2, 2.2, 2.5, 2.8, 3.1, 3.4, 3.8, 4.2, 4.6, 5, 5.5, 6.2, 2.5, 2.2,
+    ]),
     (api.Df = [
-      1, 2, 4, 6, 8, 10, 1, 1, 2, 9, 11, 10, 13, 15, 16, 18, 2, 2, 2, 2, 3, 5, 6, 10, 20, 22, 20,
-      21, 21, 22, 2, 2, 2, 3, 5, 1, 15, 24, 2, 2, 2, 8, 9, 8, 4, 4, 10, 4, 6, 8, 10, 12, 14, 16, 18,
-      20, 22, 24, 26, 28,
+      1, 2, 4, 6, 8, 10, 1, 1, 2, 9, 11, 10, 13, 15, 16, 18, 2, 2, 2, 2, 3, 5, 6, 10, 20, 22, 20, 21, 21, 22, 2, 2, 2, 3, 5, 1, 15, 24, 2, 2, 2, 8, 9, 8, 4, 4, 6, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 11, 9,
     ]),
     (api.Uk = {
       slime: 0,
@@ -1902,6 +1930,22 @@ api.initData = function initData() {
       style: 1,
       extra: "crook",
       legs: "#5a3a20",
+    },
+    czeslaw: {
+      body: "#3a4a3a",
+      head: "#d8b090",
+      hair: "#c8c8c8",
+      style: 0,
+      extra: "beard",
+      legs: "#2a2a22",
+    },
+    wladek: {
+      body: "#7a6a52",
+      head: "#f1c7a0",
+      hair: "#4a3a2a",
+      style: 0,
+      extra: "folder",
+      legs: "#3a3a4a",
     },
     rysiek: {
       body: "#4a6a7a",

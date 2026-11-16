@@ -6,6 +6,7 @@ import { bindHooks, createHooks } from "./runtime/hooks.js";
 import { createSurface, jsx, jsxs, Fragment } from "./runtime/dom.js";
 import "./world/build.js";
 import "./world/crypt.js";
+import "./world/fixes.js";
 import "./world/query.js";
 import "./world/travel.js";
 import "./render/canvas.js";
