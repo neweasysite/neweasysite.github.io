@@ -133,6 +133,41 @@ api.bh = function bh(e, t, n = 0) {
                             for (let a = 0; a < 3; a++)
                               api.o(i, "rgba(180,140,240,0.5)", 8 + a * 5, 24 + t + (a % 2), 4, 4);
                           })
+                        : e === "root"
+                          ? api.Ue("root" + t + n, 36, 40, (i) => {
+                              /* Kozacki Root: czerwono-złoty, z koroną, wąsem i szablą — nie do pomylenia z Lidią. */
+                              (api.o(i, "#4a0810", 4, 14 + t, 28, 22),
+                                api.o(i, "#8a1424", 9, 14 + t, 18, 22),
+                                api.o(i, "#b8243a", 11, 15 + t, 14, 18),
+                                api.o(i, "#ffd84a", 9, 24 + t, 18, 2),
+                                api.o(i, "#e0b060", 9, 34 + t, 18, 2),
+                                api.o(i, "#ffd84a", 5, 13 + t, 7, 4),
+                                api.o(i, "#ffd84a", 24, 13 + t, 7, 4),
+                                api.o(i, "#b8860b", 5, 16 + t, 7, 1),
+                                api.o(i, "#b8860b", 24, 16 + t, 7, 1),
+                                api.o(i, "#e8d8c0", 12, 6 + t, 12, 9),
+                                api.o(i, "#c8b8a0", 12, 13 + t, 12, 2),
+                                api.o(i, "#ffd84a", 14, 9 + t, 3, 2),
+                                api.o(i, "#ffd84a", 19, 9 + t, 3, 2),
+                                api.o(i, "#2a1a10", 13, 13 + t, 4, 1),
+                                api.o(i, "#2a1a10", 19, 13 + t, 4, 1),
+                                api.o(i, "#2a1a10", 12, 14 + t, 1, 2),
+                                api.o(i, "#2a1a10", 23, 14 + t, 1, 2),
+                                api.o(i, "#ffd84a", 11, 3 + t, 14, 3),
+                                api.o(i, "#ffd84a", 11, 0 + t, 2, 3),
+                                api.o(i, "#ffd84a", 17, 0 + t, 2, 3),
+                                api.o(i, "#ffd84a", 23, 0 + t, 2, 3),
+                                api.o(i, "#ff3048", 17, 4 + t, 2, 1),
+                                api.o(i, "#7ff7ff", 13, 4 + t, 1, 1),
+                                api.o(i, "#7ff7ff", 22, 4 + t, 1, 1),
+                                api.o(i, "#d8d8e0", 31, 17 + t, 2, 15),
+                                api.o(i, "#ffffff", 31, 17 + t, 1, 6),
+                                api.o(i, "#ffd84a", 29, 15 + t, 6, 2),
+                                api.o(i, "#7ff7ff", 16, 19 + t, 4, 4),
+                                api.o(i, "#ffffff", 17, 20 + t, 2, 2),
+                                api.o(i, "#2a0610", 12, 36 + t, 4, 4),
+                                api.o(i, "#2a0610", 20, 36 + (1 - t), 4, 4));
+                            })
                         : e === "lich" || e === "audit"
                           ? api.Ue((e === "audit" ? "audit" : "lich") + t + n, 32, 36, (i) => {
                               (api.o(i, e === "audit" ? "#142028" : "#1a2a1a", 8, 14 + t, 16, 18),

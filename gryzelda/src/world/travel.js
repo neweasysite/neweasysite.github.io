@@ -18,8 +18,8 @@ api.Ks = function Ks(e, t, n, i) {
     (e.kamila = !1),
     t === 13 && !e.f.undead && ((e.f.undead = !0), (e.dirty = !0)),
     t === 26 && e.f.lich && !e.f.cem && ((e.f.cem = !0), (e.dirty = !0)),
-    t === 28 && e.f.cem && !e.f.maze && ((e.f.maze = !0), (e.dirty = !0)),
-    t === 29 && e.f.maze && !e.f.ante && ((e.f.ante = !0), (e.dirty = !0)),
+    (t === 27 || t === 28) && e.f.cem && !e.f.maze && ((e.f.maze = !0), (e.dirty = !0)),
+    t === 29 && (e.f.maze || e.f.cem) && !e.f.ante && ((e.f.maze = !0), (e.f.ante = !0), (e.dirty = !0)),
     e.f["vz:" + t] || ((e.f["vz:" + t] = !0), (e.dirty = !0)));
   api.paintBridges && api.paintBridges(e);
   let r = api.qe[t];
@@ -30,7 +30,7 @@ api.Ks = function Ks(e, t, n, i) {
     if (
       (s[0] === "king" && e.f.king) ||
       (s[0] === "golem" && e.f.golem) ||
-      (s[0] === "phantom" && e.f.phantom && t !== 29) ||
+      (s[0] === "phantom" && e.f.phantom && t === 12) ||
       (s[0] === "lich" && t === 15 && e.f.lich) ||
       (s[0] === "lich" && t === 25 && (e.f.kozacki || e.f.rootTok)) ||
       (s[0] === "audit" && (!e.f.root || e.f.audit))
@@ -261,4 +261,13 @@ api.Rs = function Rs(e) {
 
 api.Ns = function Ns(e) {
   return api.qe[2].items.filter((t) => t.kind === "grzyb" && e.cut["item:" + t.id]).length;
+};
+
+/* Przycisk „Akt 3: do Serca Kolejki” na ekranie po Lidii: prowadzi przez
+   otwartą już kratę Sali Eskalacji prosto do Serca Kolejki. */
+api.toHeart = function toHeart(e) {
+  let ex = (api.qe[15].exits || []).find((x) => x.to === 24);
+  if (!ex) return;
+  api.Ks(e, 24, api.Y(ex.tx), api.Y(ex.ty));
+  api.ne(e, "Serce Kolejki. Bije w rytmie „Twoje zgłoszenie jest dla nas ważne”.", 3.5);
 };
