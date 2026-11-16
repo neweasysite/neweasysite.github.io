@@ -191,16 +191,20 @@ api.ph = function ph(e, t) {
       ),
       api.Ct(e, 1.4, 1.3, t.x, t.y)),
     t.kind === "phantom" &&
-      ((e.f.phantom = !0),
-      (e.dirty = !0),
-      e.items.push({ kind: "badge", x: t.x, y: t.y, v: 0, id: "badge", taken: !1 }),
-      api.ne(e, "Upi\xF3r Hold Music ucich\u0142. Zosta\u0142a tylko Odznaka Eskalacji.", 3.5),
-      api.Ct(e, 1.4, 1.3, t.x, t.y)),
+      (e.zone === 12 && !e.f.southKey
+        ? ((e.f.phantom = !0),
+          (e.dirty = !0),
+          e.items.push({ kind: "badge", x: t.x, y: t.y, v: 0, id: "badge", taken: !1 }),
+          api.ne(e, "Upi\xF3r Hold Music ucich\u0142. Zosta\u0142a tylko Odznaka Eskalacji.", 3.5),
+          api.Ct(e, 1.4, 1.3, t.x, t.y))
+        : (e.zone === 12 && ((e.f.phantom = !0), (e.dirty = !0)),
+          api.ne(e, "Upi\xF3r rozwiewa si\u0119. Hold music na chwil\u0119 milknie.", 2.6))),
     t.kind === "lich" &&
       (e.zone === 25
         ? ((e.f.kozacki = !0),
           (e.f.lich = !0),
           (e.dirty = !0),
+          (e.layerDirty = !0),
           e.items.push({ kind: "root", x: t.x, y: t.y, v: 0, id: "root", taken: !1 }),
           api.ne(
             e,
@@ -212,9 +216,10 @@ api.ph = function ph(e, t) {
         : ((e.f.lich = !0),
           (e.win = !0),
           (e.dirty = !0),
+          (e.layerDirty = !0),
           api.ne(
             e,
-            "Lichwa Lidia upad\u0142a \u2014 ale to nie by\u0142 koniec. Serce Kolejki bije dalej. Twist: Lidia by\u0142a tylko eskalacj\u0105. Wejd\u017A na po\u0142udnie sali!",
+            "Lichwa Lidia upad\u0142a \u2014 ale to nie koniec. Krata na po\u0142udniu sali puszcza: za ni\u0105 bije Serce Kolejki.",
             4.5,
           ),
           api.Ct(e, 1.4, 1.3, t.x, t.y),

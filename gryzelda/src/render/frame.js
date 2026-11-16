@@ -160,8 +160,9 @@ api.Dh = function Dh(e, t, n, i) {
         fn: () => {
           let R = Math.floor(r * (z.kind === "bat" ? 10 : 4) + z.uid) % 2,
             O = z.kind === "charger" && z.z !== 0 ? 1 : 0,
-            q = api.bh(z.kind, R, O);
-          (z.inv > 0.1 && (q = api.dp(z.kind + R + O, q)),
+            look = z.kind === "lich" && t.zone === 25 ? "root" : z.kind,
+            q = api.bh(look, R, O);
+          (z.inv > 0.1 && (q = api.dp(look + R + O, q)),
             z.elite &&
               ((e.globalAlpha = 0.35 + Math.sin(r * 5) * 0.15),
               api.ge(e, "#ffd84a", Math.round(z.x), Math.round(z.y + 2), 11),
@@ -746,10 +747,10 @@ api.Rh = function Rh(e, t, n) {
       (e.textAlign = "left")));
   let W = d + 7,
     _ = v + l + 24;
-  (t.f.seal && (api.Si(e, "seal", W, _, i), (W += 15)),
+  (t.f.seal && !api.northOpen(t) && (api.Si(e, "seal", W, _, i), (W += 15)),
     t.f.key && !t.f.door && (api.Si(e, "klucz", W, _, i), (W += 15)),
-    t.f.westKey && (api.Si(e, "manifest", W, _, i), (W += 15)),
-    t.f.southKey && (api.Si(e, "badge", W, _, i), (W += 15)),
+    t.f.westKey && !t.f.westDone && (api.Si(e, "manifest", W, _, i), (W += 15)),
+    t.f.southKey && !t.f.southDone && (api.Si(e, "badge", W, _, i), (W += 15)),
     t.f.rootTok && !t.f.root && api.Si(e, "root", W, _, i));
   let ie = t.boss,
     ze = api.Pf,

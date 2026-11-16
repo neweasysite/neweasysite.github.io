@@ -180,7 +180,7 @@ api.i2 = function i2(e, t, n, i, a, r) {
     }
     if (c === "V") {
       (api.o(e, "#1a1020", s, u, api.T, api.T),
-        t.f.westKey && t.f.southKey
+        api.portalOpen(t)
           ? (api.o(e, "#2a5a2a", s + 2, u + 2, 12, 12), api.o(e, "#6adf6a", s + 5, u + 5, 6, 6))
           : (api.o(e, "#3a2a4a", s + 2, u + 2, 12, 12), api.o(e, "#5a4a6a", s + 5, u + 5, 6, 6)));
       return;
@@ -510,13 +510,13 @@ api.Ch = function Ch(e, t, n, i, a, r, s, u, f) {
           c === 19 &&
             (api.o(e, "#f2c94c", b + 5, x + 10, 6, 6), api.o(e, "#2a1a0a", b + 7, x + 12, 2, 4)));
       else if (w === "V") {
-        if (t.f.westKey && t.f.southKey) {
+        if (api.portalOpen(t)) {
           let M = 0.5 + Math.sin(u * 3) * 0.35;
           (api.o(e, "rgba(106,223,106," + M.toFixed(2) + ")", b + 3, x + 3, 10, 10),
             f.push([b + 8, x + 8, 54, 1]));
         }
       } else if (w === "P") {
-        if (!t.f.seal) {
+        if (!api.northOpen(t)) {
           (api.o(e, "#4a4a5e", b, x, api.T, api.T),
             api.o(e, "#6e6e86", b + 1, x + 1, 14, 14),
             api.o(e, "#55556a", b + 1, x + 7, 14, 1));

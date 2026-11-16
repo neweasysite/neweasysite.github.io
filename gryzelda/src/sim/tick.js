@@ -84,6 +84,7 @@ api.yh = function yh(e, t, n) {
   else if (s > 0.01) {
     let l = api.Rp(e) * (e.swing > 0 ? 0.55 : 1) * n,
       d = api.Ye(e, u, a * l, r * l, 5);
+    d && e.zone === 0 && api.tryNorthGate && api.tryNorthGate(e, u, a, r);
     if (((e.walk += n * Math.min(1, s)), d && Math.abs(r) > 0.35 && Math.abs(r) >= Math.abs(a))) {
       let v = Math.floor(u.x / api.T),
         g = Math.floor((u.y + (r < 0 ? -6 : 6)) / api.T),
@@ -686,7 +687,7 @@ api.yh = function yh(e, t, n) {
         case "seal":
           ((e.f.seal = !0),
             (e.dirty = !0),
-            api.ne(e, "Piecz\u0119\u0107 Lasu! P\xF3\u0142nocna brama Wioski stoi otworem.", 3.5),
+            api.ne(e, "Piecz\u0119\u0107 Lasu! Przy\u0142\xF3\u017C j\u0105 do p\xF3\u0142nocnej bramy Wioski.", 3.5),
             api.se(e, l.x, l.y, "#7ff7ff", 30, 80, 0.8),
             api.Ct(e, 1.3, 1),
             api.G(e, "item"));
@@ -694,14 +695,26 @@ api.yh = function yh(e, t, n) {
         case "manifest":
           ((e.f.westKey = !0),
             (e.dirty = !0),
-            api.ne(e, "Manifest Paczek! Piotr w Wiosce b\u0119dzie wniebowzi\u0119ty.", 3.5),
+            api.ne(
+              e,
+              e.f.westQ
+                ? "Manifest Paczek! Piotr w Wiosce b\u0119dzie wniebowzi\u0119ty."
+                : "Manifest Paczek! Kto\u015B na poczcie w Wiosce na pewno go szuka.",
+              3.5,
+            ),
             api.se(e, l.x, l.y, "#ffd84a", 30, 80, 0.8),
             api.G(e, "item"));
           break;
         case "badge":
           ((e.f.southKey = !0),
             (e.dirty = !0),
-            api.ne(e, "Odznaka Eskalacji! Basia czeka na po\u0142udniu Wioski.", 3.5),
+            api.ne(
+              e,
+              e.f.southQ
+                ? "Odznaka Eskalacji! Basia czeka na po\u0142udniu Wioski."
+                : "Odznaka Eskalacji. Ci\u0119\u017Cka od cudzych zg\u0142osze\u0144. Kto\u015B w Wiosce pewnie za ni\u0105 t\u0119skni.",
+              3.5,
+            ),
             api.se(e, l.x, l.y, "#c49bff", 30, 80, 0.8),
             api.G(e, "item"));
           break;
@@ -815,6 +828,18 @@ api.yh = function yh(e, t, n) {
             (e.coins += 40),
             (e.pts += 2),
             api.ne(e, "Akta ostateczne: +4 zdrowia, +2 punkty, 40 groszy.", 3.6)),
+          l.id === "nowe_przystan" &&
+            ((e.bonusHp += 3),
+            (e.hp = api.Ze(e)),
+            (e.coins += 30),
+            api.ne(e, "Skrzynia przewo\u017Anika: kamizelka ratunkowa z napisem \u201ENIE DOTYCZY\u201D. +3 zdrowia na sta\u0142e, 30 groszy.", 4)),
+          l.id === "nowe_wladek" &&
+            ((e.pts += 2),
+            (e.coins += 20),
+            api.ne(e, "Skrzynia W\u0142adka: zg\u0142oszenie nr 1, oprawione w ramk\u0119. Status: w analizie. +2 punkty rozwoju, 20 groszy.", 4)),
+          l.id === "nowe_owczarnia" &&
+            ((e.coins += 35),
+            api.ne(e, "Skrzynia w owczarni: no\u017Cyce, we\u0142na i 35 groszy. Owce udaj\u0105, \u017Ce nic nie widzia\u0142y.", 3.5)),
           (l.id === "westcache" ||
           l.id === "depot" ||
           l.id === "swamp" ||
