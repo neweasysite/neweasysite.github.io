@@ -187,8 +187,8 @@ test("quest items sit on the hook and old quests are untouched", () => {
     kam1 = api.Qi.find((q) => q.id === "kam1");
   assert.equal(kam.giver, "zdzich");
   assert.equal(kam.steps[0].t, "item");
-  assert.equal(kam.steps[0].tx, 8);
-  assert.equal(kam.steps[0].ty, 15);
+  assert.equal(kam.steps[0].tx, 2);
+  assert.equal(kam.steps[0].ty, 1);
   assert.ok(kam.steps[0].tx < 20);
   assert.equal(kam.steps[0].ic, "deski");
   assert.equal(kam.steps[1].to, "kamila");

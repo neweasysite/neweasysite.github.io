@@ -886,7 +886,7 @@ api.hk = function hk() {
     (n[31][12] = "."),
     (n[31][13] = "."),
     (n[6][20] = "H"),
-    (j.npcs = [{ id: "ghost", tx: 14, ty: 18 }]),
+    (j.npcs = [{ id: "ghost", tx: 36, ty: 3 }]),
     api.pe(
       n,
       [
@@ -1714,7 +1714,7 @@ api.hk = function hk() {
       ),
       (ham.npcs = [
         { id: "wicek", tx: 26, ty: 20 },
-        { id: "franek", tx: 24, ty: 12 },
+        { id: "franek", tx: 3, ty: 26 },
       ]),
       (ham.spawns = [
         ["slime", 6, 16],
@@ -2010,7 +2010,7 @@ api.hk = function hk() {
     [1, "ola", 10, 20],
     [1, "rysiek", 28, 13],
     [2, "edek", 5, 17],
-    [9, "staszek", 25, 14],
+    [9, "staszek", 39, 5],
     [11, "mirek", 25, 16],
     [13, "kuba", 30, 26],
     [6, "henio", 13, 5],

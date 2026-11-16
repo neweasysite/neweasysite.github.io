@@ -1223,7 +1223,7 @@ api.Qf = function Qf() {
                 U("Ruszam"))
               : X === "nokladka"
                 ? (K(
-                    "Kładki nie ma, bo Zdzich miał ją postawić z powrotem. Deski już wyciął, leżą za wsią, po tej stronie. Idź do niego. Stoi w wiosce z łopatą.",
+                    "Kładki nie ma, bo Zdzich miał ją postawić z powrotem. Deski już wyciął, ale wichura je gdzieś zwiała. Idź do niego. Stoi w wiosce z łopatą.",
                   ),
                   ae("Idę do Zdzicha", () => {
                     ((p.f.bogdanBridge = !0), (p.dirty = !0), api.fe(p), Se(""));
@@ -1900,7 +1900,7 @@ api.Qf = function Qf() {
       else if (m === "ghost")
         X === ""
           ? (K(
-              "By\u0142em agentem helpdesku. Teraz duchem. Hold music... nigdy nie milknie. Lichwa Lidia w Sali Eskalacji (po\u0142udnie hubu) trzyma Token Root. Magini mo\u017Ce ode mnie wzi\u0105\u0107 Migni\u0119cie, Mr\xF3z i Barier\u0119.",
+              "By\u0142em agentem helpdesku. Teraz duchem. Hold music... nigdy nie milknie. Lichwa Lidia w Sali Eskalacji (wschód hubu) trzyma Token Root. Magini mo\u017Ce ode mnie wzi\u0105\u0107 Migni\u0119cie, Mr\xF3z i Barier\u0119.",
             ),
             B("lich", "Kim jest Lidia?"),
             B("how", "Jak przetrwa\u0107?"),

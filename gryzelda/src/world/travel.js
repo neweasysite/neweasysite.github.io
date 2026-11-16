@@ -145,7 +145,7 @@ api.Ks = function Ks(e, t, n, i) {
       ((e.cut["hint:undead"] = !0),
       api.ne(
         e,
-        "Kraina Nieumar\u0142ego: po\u0142udnie-zach\xF3d \u2192 Call Center, wsch\xF3d \u2192 Sala Eskalacji, p\xF3\u0142noc \u2192 Krypta, zach\xF3d \u2192 lab Igi.",
+        "Kraina Nieumar\u0142ego: po\u0142udnie-zach\xF3d \u2192 Call Center, wsch\xF3d \u2192 Sala Eskalacji, p\xF3\u0142noc \u2192 Krypta, zachód → laboratorium Gieni.",
         4.2,
       )),
     t === 5 &&

@@ -258,9 +258,9 @@ api.Ak = function Ak(e) {
     api.ne(
       t,
       t.f._plankReset
-        ? "Deski liczymy od nowa. Leżą na zachodniej drodze, zaraz za wsią. Kamila tylko podpisuje."
+        ? "Deski liczymy od nowa. Leżą w krzakach w północno-zachodnim rogu Łąki Czekania. Kamila tylko podpisuje."
         : t.f._bridgeBack
-          ? "Kładki nie ma, dopóki Kamila nie podpisze. Jesteś w wiosce. Deski są zaraz za wsią, na zachodzie."
+          ? "Kładki nie ma, dopóki Kamila nie podpisze. Jesteś w wiosce. Deski leżą na Łące Czekania, w krzakach w północno-zachodnim rogu."
           : "Wczytano zapis. Witaj z powrotem, " + t.look.name + "!",
       3.4,
     ),

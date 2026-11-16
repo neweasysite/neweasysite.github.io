@@ -124,7 +124,7 @@ const RUMORS = {
     "Zbieram zaginione pieczątki. Rozsiało się ich dwanaście po świecie. Za sześć coś dam, za komplet dam wszystko, co mam. Czyli dużo.",
   ],
   hela: [
-    "Za stodołą Zachodnich Pól stoi ruina z kamiennymi drzwiami. Mówią: Skarbiec. Podobno otwiera się, jak kamienie w Kamiennej Zagrodzie siądą na płytach.",
+    "Na Zachodnich Polach Ticketów, w południowo-wschodnim rogu, na południe od drogi do Wioski, stoi kamienny domek z zamkniętymi drzwiami. Mówią: Skarbiec. Podobno otwiera się, jak kamienie w Kamiennej Zagrodzie siądą na płytach.",
   ],
   czeslaw: [
     "Spod pomostu, z samego końca, słychać stukanie pieczątek. Tam jest właz do jakiegoś działu. Ja nie schodzę, mam przeterminowane ubezpieczenie.",

@@ -406,8 +406,21 @@ api.enterHint = function enterHint(e, t) {
 
 /* ---------- składanie ---------- */
 
+/* v1.5.1: spójność opisów z mapą (audyt F/G).
+   Deski Zdzicha: ukryty kąt Łąki za krzakiem. Dzwonek Buni: przejście za zagrodą, dół zabity deską. */
+function fixConsistency() {
+  let l = api.qe[1];
+  if (l) {
+    for (let [x, y] of [[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2]]) l.t[y][x] = ".";
+    for (let [x, y] of [[4, 1], [4, 2], [1, 3], [3, 3], [4, 3]]) l.t[y][x] = "t";
+    l.t[3][2] = "b";
+  }
+  let p = api.qe[38];
+  p && ((p.t[25][39] = "t"), (p.t[20][39] = "b"));
+}
 api.expandWorld = function expandWorld() {
   if (api.qe[62]) return;
+  fixConsistency();
   applyLevers();
   buildVault();
   buildLoch();

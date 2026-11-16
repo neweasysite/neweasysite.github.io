@@ -8,7 +8,7 @@ function wn(target, key, value) {
 }
 
 api.initData = function initData() {
-  ((api.mk = "v1.5.0"),
+  ((api.mk = "v1.5.1"),
     (api.T = 16),
     (api.oe = 320),
     (api.de = 180),
@@ -878,7 +878,7 @@ api.initData = function initData() {
       offer:
         "Mam zanie\u015B\u0107 raport kwartalny Duchowi Helpdesku, ale boj\u0119 si\u0119 duch\xF3w. I raport\xF3w. Kierownik m\xF3wi, \u017Ce sta\u017C to przygoda. Zaniesiesz za mnie?",
       accept:
-        "Duch unosi si\u0119 na zach\xF3d od g\u0142\xF3wnej \u015Bcie\u017Cki. M\xF3wi \u201Eprosz\u0119 czeka\u0107\u201D, wi\u0119c pewnie jeszcze tam jest.",
+        "Duch unosi się w północno-wschodnim rogu krainy, na wschód od ścieżki do Krypty. Mówi „proszę czekać”, więc pewnie jeszcze tam jest.",
       prog: "Raport wci\u0105\u017C w obiegu. Ja wci\u0105\u017C na sta\u017Cu. Czwarty rok.",
       turn: "Raport zatwierdzony",
       done: "Zatwierdzony bez czytania?! To najwy\u017Csza forma uznania w korporacji! Masz 80 groszy i punkt. Mo\u017Ce wreszcie mnie zatrudni\u0105.",
@@ -888,7 +888,7 @@ api.initData = function initData() {
           t: "talk",
           to: "ghost",
           ask: "Raport kwartalny od sta\u017Cysty Kuby",
-          hint: "Duch Helpdesku, Kraina Nieumar\u0142ych (zach\xF3d od \u015Bcie\u017Cki)",
+          hint: "Duch Helpdesku, Kraina Nieumarłych (północny wschód)",
           txt: "Raport bez pieczątki z laboratorium polowego? Nie przyjmę. Procedura. Iga została w aptece w Wiosce i do Nieumarłych nie wchodzi. Pieczątkę trzyma laborantka Gienia, na zachodzie tej krainy. Proszę iść. Ja poczekam. To moja specjalność.",
           ok: "Idę do Gieni",
         },
@@ -972,9 +972,9 @@ api.initData = function initData() {
       giver: "wicek",
       ask: "Czemu pan liczy owce z miną supportu?",
       offer:
-        "Bunia — ta z czarnym uchem — zgubiła dzwonek w zagrodzie na wschodzie. Bez dzwonka liczę ją dwa razy albo wcale. Znajdziesz? Leży w trawie, w środku płotu.",
+        "Bunia — ta z czarnym uchem — przecisnęła się przez dziurę w zagrodzie na wschodzie i zgubiła dzwonek za nią, w wąskim przejściu między zagrodą a płotem przysiółka. Bez dzwonka liczę ją dwa razy albo wcale. Znajdziesz?",
       accept:
-        "Zagroda jest na wschodzie przysiółka. Wejście od drogi, tam gdzie żywopłot jest przerwany. Dzwonek jest mały i złośliwy.",
+        "Do przejścia za zagrodą wchodzi się z drogi, od góry. Od dołu zabiłem dziurę deską, a po drodze rosną krzaki. Dzwonek jest mały i złośliwy.",
       prog: "Bez dzwonka Bunia jest teoretyczna. Owca teoretyczna i tak zjada kapustę.",
       turn: "Dzwonek się odnalazł",
       done: "Dzyń! Czyli jednak jest dwanaście. Masz 35 groszy. I nie mów Buni, że ją przeliczyłem.",
@@ -983,11 +983,11 @@ api.initData = function initData() {
         {
           t: "item",
           z: 38,
-          tx: 35,
-          ty: 20,
+          tx: 39,
+          ty: 23,
           name: "Dzwonek Buni",
           ic: "dzwonek",
-          hint: "Przysiółek za Młynem: środek zagrody na wschodzie",
+          hint: "Przysiółek za Młynem: wąskie przejście za wschodnią zagrodą, wejście z drogi od góry",
           fin: "Dzwonek! Nadal pachnie owcą i trochę ticketem. Wracaj do pasterza Wicka.",
         },
       ],
@@ -998,7 +998,7 @@ api.initData = function initData() {
       giver: "genowefa",
       ask: "Coś się dzieje w przysiółku?",
       offer:
-        "Franek pożyczył mój garnek „na chwilę”. Chwila trwa od śniadania. Stoi przy drodze, między chatami, i udaje, że naprawia płot. Odbierz garnek, zanim zupa dostanie numer sprawy.",
+        "Franek pożyczył mój garnek „na chwilę”. Chwila trwa od śniadania. Stoi przy płocie za stawem, w południowo-zachodnim kącie przysiółka, i udaje, że go naprawia. Odbierz garnek, zanim zupa dostanie numer sprawy.",
       accept: "Nie daj się zaprosić na zupę. Ostatni, który spróbował, dostał odpowiedź automatyczną.",
       prog: "Garnek wciąż w obiegu. Ja wciąż bez obiadu.",
       turn: "Garnek wrócił",
@@ -1009,7 +1009,7 @@ api.initData = function initData() {
           t: "talk",
           to: "franek",
           ask: "Genowefa chce swój garnek z powrotem",
-          hint: "Franek od Płota, Przysiółek za Młynem (przy drodze)",
+          hint: "Franek od Płota, Przysiółek za Młynem (płot za stawem, południowy zachód)",
           txt: "Garnek? A, ten. Zupa wyszła, ticket nie. Oddaj Genowefie, tylko nie wąchaj pokrywki. I powiedz, że płot jest prawie prosty. Prawie.",
           ok: "Zaniosę, bez wąchania",
         },
@@ -1133,9 +1133,9 @@ api.initData = function initData() {
       giver: "zdzich",
       ask: "Czemu pan tak patrzy w stronę łąki?",
       offer:
-        "Bo to ja miałem tę kładkę postawić z powrotem. Zgniła, została rzeka, a mistrz Bogdan i tak wysyła ludzi do Lasu Szeptów. Trzy deski leżą na zachodniej drodze, zaraz za wsią, zanim droga dojdzie do wody. Zanieś je Kamili. Ona podpisze, ja położę. Dopiero wtedy idzie się na wschód.",
+        "Bo to ja miałem tę kładkę postawić z powrotem. Zgniła, została rzeka, a mistrz Bogdan i tak wysyła ludzi do Lasu Szeptów. Deski przygotowałem, ale w nocy wichura zwiała je z drogi. Na Łąkę Czekania idzie się ze wsi na wschód. Deski wylądowały w krzakach w północno-zachodnim rogu łąki, pod samymi drzewami, daleko od rzeki. Zanieś je Kamili. Ona podpisze, ja położę.",
       accept:
-        "Zachodnia droga, tuż po wejściu na łąkę. Widać je z ścieżki. Jak Kamila podpisze, wróć do mnie. Dopiero wtedy kładę deski na głównej drodze.",
+        "Z drogi ich nie zobaczysz. Wejdź na łąkę i idź w górę, pod drzewa, aż do samego rogu. Krzaki trzeba przyciąć. Jak Kamila podpisze, wróć do mnie. Dopiero wtedy kładę deski na głównej drodze.",
       prog: "Deski leżą na drodze albo Kamila jeszcze nie stempluje.",
       turn: "Kamila podpisała odbiór",
       done: "Podpis jest. Kładę trzy deski tam, gdzie droga urywała się na wodzie. Możesz iść. To nie jest most docelowy. To trzy deski.",
@@ -1144,12 +1144,12 @@ api.initData = function initData() {
         {
           t: "item",
           z: 1,
-          tx: 8,
-          ty: 15,
+          tx: 2,
+          ty: 1,
           name: "Trzy deski",
           ic: "deski",
-          hint: "Łąka Czekania: zachodnia droga, zaraz za wsią, daleko od rzeki",
-          fin: "Deski. Leżały na zachodzie, nie przy wodzie. Kamila ma je tylko podpisać.",
+          hint: "Łąka Czekania: północno-zachodni róg, w krzakach pod drzewami",
+          fin: "Deski! Wciśnięte w krzaki, z kartką „NIE RUSZAĆ — Z.”. Wichura też ich nie ruszyła, tylko przeniosła. Kamila ma je tylko podpisać.",
         },
         {
           t: "talk",
@@ -1169,7 +1169,7 @@ api.initData = function initData() {
       ask: "Coś jeszcze straszy na polu?",
       offer:
         "Ticket, którego z dołu nie chciałem czytać. Jak go zdejmiesz, zanieś do Zbyszka. On fałszuje tak, że papier ucieka.",
-      accept: "Słupek jest na Polach. Hak, nie drabinę.",
+      accept: "Słupek stoi w kręgu kamieni, w samym środku Pól. Stąd go nie widać, trzeba się przejść. Hak, nie drabinę.",
       prog: "Ticket wciąż wisi albo Zbyszek jeszcze go nie przeczytał.",
       turn: "Ticket zdjęty",
       done: "Zbyszek mówi, że to wezwanie do ciebie, oddane do nadawcy. Masz fałsz. Użyj w pustkę.",
