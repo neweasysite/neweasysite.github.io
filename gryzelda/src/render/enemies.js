@@ -133,6 +133,66 @@ api.bh = function bh(e, t, n = 0) {
                             for (let a = 0; a < 3; a++)
                               api.o(i, "rgba(180,140,240,0.5)", 8 + a * 5, 24 + t + (a % 2), 4, 4);
                           })
+                        : e === "stamper"
+                          ? api.Ue("stamper" + t + n, 32, 34, (i) => {
+                              /* Pieczątkarz Ryszard: żywa pieczątka z drewnianym trzonkiem i czerwoną gumą. */
+                              (api.o(i, "#1b1424", 11, 0 + t, 10, 9),
+                                api.o(i, "#8a5a32", 12, 1 + t, 8, 7),
+                                api.o(i, "#c08a52", 13, 2 + t, 3, 2),
+                                api.o(i, "#5a3a20", 14, 8 + t, 4, 5),
+                                api.o(i, "#1b1424", 3, 12 + t, 26, 16),
+                                api.o(i, "#6a4a2a", 4, 13 + t, 24, 6),
+                                api.o(i, "#8a6a42", 5, 13 + t, 22, 2),
+                                api.o(i, "#b8243a", 4, 19 + t, 24, 8),
+                                api.o(i, "#ff4d6d", 5, 20 + t, 22, 2),
+                                api.o(i, "#ffffff", 9, 15 + t, 4, 3),
+                                api.o(i, "#ffffff", 19, 15 + t, 4, 3),
+                                api.o(i, "#1b1424", 11, 16 + t, 2, 2),
+                                api.o(i, "#1b1424", 19, 16 + t, 2, 2),
+                                api.o(i, "#1b1424", 8, 14 + t, 6, 1),
+                                api.o(i, "#1b1424", 18, 14 + t, 6, 1),
+                                api.o(i, "#ffd8d8", 7, 23 + t, 18, 2),
+                                api.o(i, "#7a1020", 8, 23 + t, 2, 2),
+                                api.o(i, "#7a1020", 12, 23 + t, 3, 2),
+                                api.o(i, "#7a1020", 17, 23 + t, 2, 2),
+                                api.o(i, "#7a1020", 21, 23 + t, 3, 2),
+                                api.o(i, "#2a1a10", 7, 28 + t, 5, 5),
+                                api.o(i, "#2a1a10", 20, 28 + (1 - t), 5, 5));
+                            })
+                        : e === "reklamator"
+                          ? api.Ue("reklamator" + t + n, 40, 44, (i) => {
+                              /* Kierownik Reklamacji: szafa na akta z monitorem zamiast głowy, krawatem i megafonem. */
+                              (api.o(i, "#1b1424", 6, 14 + t, 28, 26),
+                                api.o(i, "#4a5a6a", 7, 15 + t, 26, 24),
+                                api.o(i, "#6a7a8a", 8, 16 + t, 24, 6),
+                                api.o(i, "#6a7a8a", 8, 23 + t, 24, 6),
+                                api.o(i, "#6a7a8a", 8, 30 + t, 24, 6),
+                                api.o(i, "#c9c9d0", 17, 18 + t, 6, 2),
+                                api.o(i, "#c9c9d0", 17, 25 + t, 6, 2),
+                                api.o(i, "#c9c9d0", 17, 32 + t, 6, 2),
+                                api.o(i, "#f4f0e0", 10, 21 + t, 5, 3),
+                                api.o(i, "#f4f0e0", 26, 28 + t, 4, 4),
+                                api.o(i, "#1b1424", 9, 1 + t, 22, 14),
+                                api.o(i, "#2a3a4a", 10, 2 + t, 20, 12),
+                                api.o(i, "#3a1418", 11, 3 + t, 18, 10),
+                                api.o(i, "#ff4d6d", 13, 5 + t, 5, 3),
+                                api.o(i, "#ff4d6d", 22, 5 + t, 5, 3),
+                                api.o(i, "#ffd84a", 14, 6 + t, 2, 1),
+                                api.o(i, "#ffd84a", 23, 6 + t, 2, 1),
+                                api.o(i, "#ff4d6d", 15, 10 + t, 10, 1),
+                                api.o(i, "#ff4d6d", 14, 9 + t, 1, 1),
+                                api.o(i, "#ff4d6d", 25, 9 + t, 1, 1),
+                                api.o(i, "#d23", 18, 14 + t, 4, 3),
+                                api.o(i, "#b01020", 18, 17 + t, 4, 9),
+                                api.o(i, "#d23", 19, 26 + t, 2, 2),
+                                api.o(i, "#1b1424", 0, 18 + t, 7, 10),
+                                api.o(i, "#ffd84a", 1, 19 + t, 5, 8),
+                                api.o(i, "#fff4b0", 1, 20 + t, 1, 6),
+                                api.o(i, "#3a4a5a", 34, 18 + t, 4, 12),
+                                api.o(i, "#f1c7a0", 34, 30 + t, 4, 3),
+                                api.o(i, "#2a2a32", 10, 40 + t, 6, 4),
+                                api.o(i, "#2a2a32", 24, 40 + (1 - t), 6, 4));
+                            })
                         : e === "root"
                           ? api.Ue("root" + t + n, 36, 40, (i) => {
                               /* Kozacki Root: czerwono-złoty, z koroną, wąsem i szablą — nie do pomylenia z Lidią. */

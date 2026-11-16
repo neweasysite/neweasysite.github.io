@@ -981,7 +981,7 @@ api.Qf = function Qf() {
         id: "arm1",
         name: "Sk\xF3rzany kubrak",
         desc: "Ranga 1: +2 maks. zdrowia. Rangi 2 i 3: po +1 (Wanda dok\u0142ada \u0142atki).",
-        costs: [40, 90, 150],
+        costs: api.forgeCosts.arm1,
         need: "",
         ok: () => !0,
       },
@@ -989,7 +989,7 @@ api.Qf = function Qf() {
         id: "edge1",
         name: "Naostrzenie broni I",
         desc: "Ranga 1: +15% obra\u017Ce\u0144 ka\u017Cdej broni. Rangi 2 i 3: po +5%.",
-        costs: [35, 80, 140],
+        costs: api.forgeCosts.edge1,
         need: "",
         ok: () => !0,
       },
@@ -997,7 +997,7 @@ api.Qf = function Qf() {
         id: "edge2",
         name: "Wywa\u017Cenie broni II",
         desc: "Ranga 1: kolejne +15% obra\u017Ce\u0144. Rangi 2 i 3: po +5%.",
-        costs: [70, 150, 250],
+        costs: api.forgeCosts.edge2,
         need: "Przynie\u015B \u017Cywic\u0119 Kr\xF3la Glut\xF3w (pokonaj go).",
         ok: (m) => !!m.f.king,
       },
@@ -1005,7 +1005,7 @@ api.Qf = function Qf() {
         id: "arm2",
         name: "Kolczuga z drutu modemowego",
         desc: "Ranga 1: +3 maks. zdrowia. Rangi 2 i 3: po +1.",
-        costs: [95, 200, 330],
+        costs: api.forgeCosts.arm2,
         need: "Wanda potrzebuje odcisku Piecz\u0119ci Lasu.",
         ok: (m) => !!m.f.seal,
       },
@@ -1013,7 +1013,7 @@ api.Qf = function Qf() {
         id: "edge3",
         name: "Hartowanie III",
         desc: "Ranga 1: kolejne +15% obra\u017Ce\u0144. Rangi 2 i 3: po +5%.",
-        costs: [140, 290, 480],
+        costs: api.forgeCosts.edge3,
         need: "Wymaga stali z Ruin (poci\u0105gnij d\u017Awigni\u0119 w Ruinach).",
         ok: (m) => !!m.f.lever1,
       },
@@ -1021,7 +1021,7 @@ api.Qf = function Qf() {
         id: "arm3",
         name: "Pancerz z etykiet paczek",
         desc: "Ranga 1: +4 maks. zdrowia. Rangi 2 i 3: po +2.",
-        costs: [130, 270, 450],
+        costs: api.forgeCosts.arm3,
         need: "Przynie\u015B Manifest Paczek z Depotu.",
         ok: (m) => !!m.f.westKey,
       },
@@ -1029,7 +1029,7 @@ api.Qf = function Qf() {
         id: "edge4",
         name: "Ostrzenie SLA IV",
         desc: "Ranga 1: kolejne +15% obra\u017Ce\u0144. Rangi 2 i 3: po +5%.",
-        costs: [175, 360, 600],
+        costs: api.forgeCosts.edge4,
         need: "Wymaga Odznaki Eskalacji z Call Center.",
         ok: (m) => !!m.f.southKey,
       },
@@ -1037,7 +1037,7 @@ api.Qf = function Qf() {
         id: "rootEdge",
         name: "Hart Root",
         desc: "Ranga 1: +15% obra\u017Ce\u0144 i przebija tarcze jak Ostrze Eskalacji. Rangi 2 i 3: po +5%.",
-        costs: [240, 480, 800],
+        costs: api.forgeCosts.rootEdge,
         need: "Token Root Access (po Lichwie).",
         ok: (m) => !!m.f.rootTok,
       },
@@ -1148,7 +1148,7 @@ api.Qf = function Qf() {
                   "Kryszta\u0142 mrugn\u0105\u0142... i znowu ticket. Tymczasowa odpowied\u017A. Prawdziwy Root siedzi w Krainie Nieumar\u0142ego Supportu. Najpierw Zach\xF3d i Po\u0142udnie.",
                 ),
                 ae("Co mam zrobi\u0107?", () => {
-                  ((p.f.act2 = !0), (p.dirty = !0), api.fe(p), Se("act2"));
+                  ((p.f.act2 = !0), (p.coins += 60), (p.dirty = !0), api.G(p, "chest"), api.fe(p), Se("act2"));
                 }),
                 U())
               : (K(
@@ -1250,7 +1250,7 @@ api.Qf = function Qf() {
                       U())
                     : X === "act2"
                       ? (K(
-                          "Na zachodzie Naczelnik Piotr tonie w zagubionych paczkach. Na po\u0142udniu Analityczka Basia mierzy SLA w bagnie. Dwa klucze otworz\u0105 portal do Nieumar\u0142ego Supportu.",
+                          "Masz tu 60 groszy zaliczki na Akt 2. Nie wydaj wszystkiego na kaw\u0119. Na zachodzie Naczelnik Piotr tonie w zagubionych paczkach. Na po\u0142udniu Analityczka Basia mierzy SLA w bagnie. Dwa klucze otworz\u0105 portal do Nieumar\u0142ego Supportu.",
                         ),
                         U("Ruszam"))
                       : X === "west"
@@ -4697,6 +4697,14 @@ api.Qf = function Qf() {
                               }),
                             ),
                           D === "quest" && R2(),
+                          D === "quest" &&
+                            api.journalExtra &&
+                            Ee(
+                              "Bestiariusz i Pieczątki",
+                              (0, api.h.jsx)(api.h.Fragment, {
+                                children: api.journalExtra(p).map((J) => Qe(J)),
+                              }),
+                            ),
                           D === "settings" &&
                             (0, api.h.jsxs)("div", {
                               children: [

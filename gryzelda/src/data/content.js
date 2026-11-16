@@ -8,7 +8,7 @@ function wn(target, key, value) {
 }
 
 api.initData = function initData() {
-  ((api.mk = "v1.4.6"),
+  ((api.mk = "v1.5.0"),
     (api.T = 16),
     (api.oe = 320),
     (api.de = 180),
@@ -1056,7 +1056,7 @@ api.initData = function initData() {
       giver: "hela",
       ask: "Co tu ważycie poza owcami?",
       offer:
-        "Owczy spis leży za kratą w stodole, tej z belkami. Waga jest uparta: lewa belka w dół (beczy), środkowa zostaje w górze (śpi), prawa w dół (pilnuje). Potem Użyj przy belce, nie przy mnie. Jak się pomyli, przekładaj jeszcze raz. Za kratą jest też skrzynia.",
+        "Owczy spis leży za kratą w stodole, tej z belkami. Waga ma się ustawić tak: lewa belka w dół (beczy), środkowa w górze (śpi), prawa w dół (pilnuje). Tylko że belki są ze sobą powiązane sznurkiem, więc jedna ciągnie drugą. Kombinuj przy belkach, nie przy mnie. Za kratą jest też skrzynia.",
       accept: "Spis jest na papierze w kratkę. Nie poprawiaj liczb, owce się obrażają.",
       prog: "Spis wciąż za kratą. Siano nie lubi być liczone na oko.",
       turn: "Owczy spis",
@@ -1070,7 +1070,7 @@ api.initData = function initData() {
           ty: 1,
           name: "Owczy spis",
           ic: "awizo",
-          hint: "Stodoła na pastwisku: lewa w dół, środkowa zostaw, prawa w dół, potem Użyj",
+          hint: "Stodoła na pastwisku: belki są powiązane. Cel: lewa w dół, środkowa w górze, prawa w dół",
           fin: "Spis! Dwanaście owiec, jeden baran i przypis: „nie liczyć dwa razy”. Wracaj do Heli.",
         },
       ],
@@ -1326,7 +1326,7 @@ api.initData = function initData() {
       hela: [
         "Pasterka Hela. Wicek liczy, ja ważę. Siano ma być po równo, a nigdy nie jest.",
         "Baran Support przeskoczył płot. Kłak został w kamiennej zagrodzie. Kamienie same nie wejdą na płyty.",
-        "Waga siana: lewa w dół, środkowa śpi, prawa w dół. Jak się pomyli, Użyj jeszcze raz.",
+        "Waga siana jest na sznurkach: pociągniesz jedną belkę, sąsiadka też drgnie. Krata podpowiada, co się zgadza.",
         "Waga siana to nie waga popiołu. W katakumbach belki otwierają podłogę, a na dnie czeka archiwariusz.",
       ],
       roma: [
@@ -1384,6 +1384,7 @@ api.initData = function initData() {
   api.Sk();
   api.padPortals();
   api.fixWorld();
+  api.expandWorld();
   api.placeClips();
   api.fixLandings();
   api.fixSpawns();
@@ -1798,7 +1799,7 @@ api.initData = function initData() {
         let r = api.forgeRank(e, id);
         r > 0 && (s += 1 + (r - 1) / 3);
       }
-      return s;
+      return s + (e.f && e.f.rekawica ? 0.67 : 0);
     }),
     (api.ut = (e) => 4 + e.st.mnd * 2 + e.bonusMp),
     (api.Rp = (e) =>
@@ -1826,11 +1827,16 @@ api.initData = function initData() {
   ((api._f = null), (api.ji = null));
   ((api.Fk = [
       1, 1.25, 1.55, 1.7, 2.1, 2.5, 1, 1, 1.35, 2.2, 2.6, 2.4, 2.9, 3.3, 3.6, 4, 1.1, 1.1, 1.1, 1.1, 1.4, 1.6, 1.8, 2.4, 4.8, 5.4, 4.9, 5.1, 5.2, 5.5, 1.2, 1.15, 1.2, 1.5, 1.7, 1, 3.3, 5.8, 1.25, 1.1, 1.1, 2.2, 2.8, 2.6, 1.8, 1.8, 1.8, 1.8, 2, 2.2, 2.5, 2.8, 3.1, 3.4, 3.8, 4.2, 4.6, 5, 5.5, 6.2, 2.5, 2.2,
+      /* 62–66 Skarbiec Przesuwnych Spraw, 67–71 Dział Reklamacji */
+      2.2, 2.2, 2.2, 2.2, 2.2, 2.9, 3.1, 3.1, 3, 3.4,
     ]),
     (api.Df = [
       1, 2, 4, 6, 8, 10, 1, 1, 2, 9, 11, 10, 13, 15, 16, 18, 2, 2, 2, 2, 3, 5, 6, 10, 20, 22, 20, 21, 21, 22, 2, 2, 2, 3, 5, 1, 15, 24, 2, 2, 2, 8, 9, 8, 4, 4, 6, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 11, 9,
+      9, 9, 9, 9, 9, 13, 14, 14, 14, 16,
     ]),
     (api.Uk = {
+      stamper: 4,
+      reklamator: 5,
       slime: 0,
       gold: 1,
       bat: 0,
@@ -2036,6 +2042,7 @@ api.initData = function initData() {
       legs: "#4a3a2a",
     },
   };
+  api.extendNpcs && api.extendNpcs();
   api.cp = new Map();
   api.Ws = {
     grass: {

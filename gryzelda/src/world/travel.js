@@ -10,6 +10,7 @@ api.Ks = function Ks(e, t, n, i) {
     (e.py = i),
     (e.pshots = []),
     (e.eshots = []),
+    (e.marks = []),
     (e.parts = []),
     (e.texts = []),
     (e.bolts = []),
@@ -33,7 +34,9 @@ api.Ks = function Ks(e, t, n, i) {
       (s[0] === "phantom" && e.f.phantom && t === 12) ||
       (s[0] === "lich" && t === 15 && e.f.lich) ||
       (s[0] === "lich" && t === 25 && (e.f.kozacki || e.f.rootTok)) ||
-      (s[0] === "audit" && (!e.f.root || e.f.audit))
+      (s[0] === "audit" && (!e.f.root || e.f.audit)) ||
+      (s[0] === "stamper" && e.f.pieczatkarz) ||
+      (s[0] === "reklamator" && e.f.reklamator)
     )
       continue;
     if (e.cut[u]) {
@@ -168,8 +171,8 @@ api.Ks = function Ks(e, t, n, i) {
       ((e.cut["hint:waga"] = !0),
       api.ne(
         e,
-        "Belka: lewa beczy (w dół), środkowa śpi (zostaw), prawa pilnuje (w dół). Potem Użyj. Za kratą skrzynia.",
-        4.6,
+        api.leverHint(r, "Waga Siana. Za kratą skrzynia."),
+        5.5,
       )),
     t === 47 &&
       !e.cut["hint:crypt"] &&
@@ -182,31 +185,32 @@ api.Ks = function Ks(e, t, n, i) {
     t === 49 &&
       !e.cut["hint:zap1"] &&
       ((e.cut["hint:zap1"] = !0),
-      api.ne(e, "Zapadnia to krata w podłodze. Użyj dźwigni na południe od niej.", 3.8)),
+      api.ne(e, api.leverHint(r, "Zapadnia to krata w podłodze."), 5.5)),
     t === 51 &&
       !e.cut["hint:popiol"] &&
       ((e.cut["hint:popiol"] = !0),
       api.ne(
         e,
-        "Waga popiołu: lewa w dół, środkowa zostaw, prawa w dół. Potem Użyj.",
-        4.2,
+        api.leverHint(r, "Waga Popiołu."),
+        5.5,
       )),
     t === 54 &&
       !e.cut["hint:kreg"] &&
       ((e.cut["hint:kreg"] = !0),
       api.ne(
         e,
-        "Dwa kamienie, dwie płyty. Pchasz na boki i do góry. Jak utkną: Dziennik → Przywróć.",
-        4.2,
+        "Krąg Kamieni: trzy kamienie, trzy płyty, zero symetrii. Jak utkną: Dziennik → Przywróć albo wyjdź i wróć.",
+        4.6,
       )),
     t === 55 &&
       !e.cut["hint:zap2"] &&
       ((e.cut["hint:zap2"] = !0),
-      api.ne(e, "Dwie dźwignie, obie w dół. Potem podłoga puszcza.", 3.6)),
+      api.ne(e, api.leverHint(r, "Druga Zapadnia."), 5.5)),
     t === 59 &&
       !e.cut["hint:morok"] &&
       ((e.cut["hint:morok"] = !0),
       api.ne(e, "Morok, Archiwariusz Otchłani. Nie prowadzi akt. On je zamyka.", 4)),
+    api.enterHint && api.enterHint(e, t),
     (a !== t || e.time < 0.5) && ((e.banner = r.name), (e.bannerT = 2.4)),
     api.G(e, "zone:" + r.theme),
     api.nh(e));

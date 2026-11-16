@@ -85,6 +85,7 @@ api.yh = function yh(e, t, n) {
     let l = api.Rp(e) * (e.swing > 0 ? 0.55 : 1) * n,
       d = api.Ye(e, u, a * l, r * l, 5);
     d && e.zone === 0 && api.tryNorthGate && api.tryNorthGate(e, u, a, r);
+    d && e.zone !== 0 && api.tryGateHint && api.tryGateHint(e, u, a, r);
     if (((e.walk += n * Math.min(1, s)), d && Math.abs(r) > 0.35 && Math.abs(r) >= Math.abs(a))) {
       let v = Math.floor(u.x / api.T),
         g = Math.floor((u.y + (r < 0 ? -6 : 6)) / api.T),
@@ -146,13 +147,16 @@ api.yh = function yh(e, t, n) {
         S = g + e.fy,
         P = e.blocks.find((N) => N.tx === C && N.ty === S);
       if (P) {
-        if (((e.pushT += n), e.pushT > 0.28)) {
+        if (((e.pushT += n), e.pushT > (e.f.rekawica ? 0.14 : 0.28))) {
           e.pushT = 0;
           let N = C + e.fx,
             Q = S + e.fy,
             W = api.Pe(e, e.zone, N, Q);
           !api.Qo(e, W) &&
           W !== "S" &&
+          W !== "_" &&
+          W !== "U" &&
+          W !== "d" &&
           !api.Ef(e, N, Q) &&
           !(N === Math.floor(e.px / api.T) && Q === Math.floor(e.py / api.T))
             ? ((P.tx = N),
@@ -661,7 +665,8 @@ api.yh = function yh(e, t, n) {
           ? ((e.f.root = !0),
             (e.win = !0),
             (e.dirty = !0),
-            api.ne(e, "Kryszta\u0142 Odpowiedzi: ROOT OK. Kolejka rozwi\u0105zana. Na zawsze.", 4),
+            (e.coins += 100),
+            api.ne(e, "Kryszta\u0142 Odpowiedzi: ROOT OK. Kolejka rozwi\u0105zana. Na zawsze. Premia za zamkni\u0119cie zg\u0142oszenia: +100 groszy.", 4),
             api.G(e, "win"),
             api.se(e, l.x, l.y, "#6adf6a", 50, 120, 1))
           : e.f.won || ((e.f.won = !0), (e.win = !0), (e.dirty = !0), api.G(e, "win")),
@@ -781,6 +786,8 @@ api.yh = function yh(e, t, n) {
             api.ne(e, "Ba\u0144ka ochronna: poch\u0142onie jedno trafienie.", 2),
             api.G(e, "power"));
           break;
+        default:
+          api.pickExtra && api.pickExtra(e, l);
       }
       api.se(e, l.x, l.y, "#ffffff", 6, 40, 0.4);
     }
@@ -840,6 +847,7 @@ api.yh = function yh(e, t, n) {
           l.id === "nowe_owczarnia" &&
             ((e.coins += 35),
             api.ne(e, "Skrzynia w owczarni: no\u017Cyce, we\u0142na i 35 groszy. Owce udaj\u0105, \u017Ce nic nie widzia\u0142y.", 3.5)),
+          (api.openChest(e, l) || 1) ||
           (l.id === "westcache" ||
           l.id === "depot" ||
           l.id === "swamp" ||
@@ -877,6 +885,7 @@ api.yh = function yh(e, t, n) {
           api.ne(e, "Skrzynia! +25 groszy i 1 punkt rozwoju.", 3))));
   }
   let D = e.boss;
+  api.aiPre && api.aiPre(e, n);
   for (let l of e.enemies) {
     if (!l.alive) continue;
     if (l.pinT > 0) {
@@ -899,7 +908,9 @@ api.yh = function yh(e, t, n) {
       l.kind !== "phantom" &&
       l.kind !== "lich" &&
       l.kind !== "audit" &&
-      l.kind !== "morok"
+      l.kind !== "morok" &&
+      l.kind !== "stamper" &&
+      l.kind !== "reklamator"
     )
       continue;
     if (
@@ -912,6 +923,8 @@ api.yh = function yh(e, t, n) {
         l.kind !== "lich" &&
         l.kind !== "audit" &&
         l.kind !== "morok" &&
+        l.kind !== "stamper" &&
+        l.kind !== "reklamator" &&
         l.kind !== "nest" &&
         l.kind !== "charger" &&
         l.inv > 0.08)
@@ -949,7 +962,7 @@ api.yh = function yh(e, t, n) {
         let P = Math.random() * Math.PI * 2;
         ((l.vx = Math.cos(P) * 14), (l.vy = Math.sin(P) * 14));
       }
-      if ((api.Ye(e, l, l.vx * n, l.vy * n, 5), (l.cd -= n), l.cd <= 0 && g < 140)) {
+      if ((api.Ye(e, l, l.vx * n, l.vy * n, 5), api.aiRanged(e, l, n), (l.cd -= n), l.cd <= 0 && g < 140)) {
         let P = e.zone === 4 || e.zone === 5;
         l.cd = P ? 2.7 : 2.3;
         let N = Math.atan2(v, d);
@@ -972,12 +985,21 @@ api.yh = function yh(e, t, n) {
           ((l.cd = 5),
           e.enemies.push(api.Pi(e, "slime", l.x + (Math.random() - 0.5) * 20, l.y + 14)),
           api.se(e, l.x, l.y, "#ffffff", 8, 40, 0.4)));
-    else if (l.kind === "king" || l.kind === "golem" || l.kind === "phantom" || l.kind === "lich" || l.kind === "audit") {
+    else if (
+      l.kind === "king" ||
+      l.kind === "golem" ||
+      l.kind === "phantom" ||
+      l.kind === "lich" ||
+      l.kind === "audit" ||
+      l.kind === "stamper" ||
+      l.kind === "reklamator"
+    ) {
+      (l.kind === "reklamator" || l.kind === "stamper") && api.bossExtra && api.bossExtra(e, l, n, g);
       if (!l.intro && g < 160)
         ((l.intro = !0), api.Ct(e, 1.5, 1.8, l.x, l.y), api.G(e, "boss"));
       if (g > 220) continue;
       l.cd -= n;
-      let P = l.kind === "lich" || l.kind === "audit",
+      let P = l.kind === "lich" || l.kind === "audit" || l.kind === "reklamator",
         N = l.kind === "phantom",
         Q = l.kind !== "king";
       if (P && !l.split && l.hp <= l.maxHp * 0.66) {
@@ -986,13 +1008,15 @@ api.yh = function yh(e, t, n) {
             e,
             l.kind === "audit"
               ? "AUDYT-BOT: FAZA 2 \u2014 niezgodno\u015B\u0107 w aktach!"
-              : e.zone === 25
+              : l.kind === "reklamator"
+                ? "Kierownik Reklamacji: FAZA 2 \u2014 wzywam rzeczoznawc\xF3w! Uwaga na pieczątki z sufitu!"
+                : e.zone === 25
                 ? "Kozacki Root: FAZA 2!"
                 : "Lichwa Lidia: FAZA 2!",
             2.6,
           ));
         for (let _ = 0; _ < (e.zone === 25 ? 3 : 2); _++)
-          e.enemies.push(api.Pi(e, "zombie", l.x + (_ - 1) * 18, l.y + 12));
+          e.enemies.push(api.Pi(e, l.kind === "reklamator" ? "ticket" : "zombie", l.x + (_ - 1) * 18, l.y + 12));
         (api.se(e, l.x, l.y, "#6adf6a", 28, 90, 0.7), api.Bt(e, 6), api.G(e, "boom"));
       }
       if (P && l.split && l.hp <= l.maxHp * 0.33 && l.hitId !== -99) {
@@ -1001,7 +1025,9 @@ api.yh = function yh(e, t, n) {
             e,
             l.kind === "audit"
               ? "AUDYT-BOT: FAZA 3 \u2014 paragrafy ostateczne!"
-              : e.zone === 25
+              : l.kind === "reklamator"
+                ? "Kierownik Reklamacji: FAZA 3 \u2014 REKLAMACJA ODRZUCONA W CA\u0141O\u015ACI!"
+                : e.zone === 25
                 ? "Kozacki Root: FAZA 3 \u2014 ROOT RAGE!"
                 : "Lichwa: ostatnia eskalacja!",
             2.6,
@@ -1070,7 +1096,7 @@ api.yh = function yh(e, t, n) {
         let P = Math.random() * Math.PI * 2;
         ((l.vx = Math.cos(P) * 18), (l.vy = Math.sin(P) * 18));
       }
-      if ((api.Ye(e, l, l.vx * n, l.vy * n, 5), (l.cd -= n), l.cd <= 0 && g < 150)) {
+      if ((api.Ye(e, l, l.vx * n, l.vy * n, 5), api.aiRanged(e, l, n), (l.cd -= n), l.cd <= 0 && g < 150)) {
         l.cd = 2;
         let P = Math.atan2(v, d);
         (e.eshots.push({
@@ -1110,6 +1136,7 @@ api.yh = function yh(e, t, n) {
                 (l.vy = (v / g) * 210),
                 api.G(e, "dash")))
             : api.Ye(e, l, (d / g) * 22 * n, (v / g) * 22 * n, 5);
+    else if ((l.kind === "shield" || l.kind === "zombie" || l.kind === "spider" || l.kind === "rat") && api.aiChase(e, l, n));
     else if (l.kind === "shield")
       (g < 120 ? ((l.vx = (d / g) * 28), (l.vy = (v / g) * 28)) : ((l.vx *= 0.9), (l.vy *= 0.9)),
         api.Ye(e, l, l.vx * n, l.vy * n, 6));
@@ -1120,6 +1147,7 @@ api.yh = function yh(e, t, n) {
         ((l.vx = Math.cos(P) * 12), (l.vy = Math.sin(P) * 12));
       }
       (api.Ye(e, l, l.vx * n, l.vy * n, 5),
+        api.aiRanged(e, l, n),
         (l.cd -= n),
         l.cd <= 0 &&
           g < 160 &&
@@ -1146,11 +1174,7 @@ api.yh = function yh(e, t, n) {
         api.Ye(e, l, l.vx * n, l.vy * n, 4));
     else if (
       l.kind === "snake" &&
-      (g < 120
-        ? ((l.vx = (d / g) * 28 + Math.sin(l.t * 6) * 14),
-          (l.vy = (v / g) * 28 + Math.cos(l.t * 5) * 14))
-        : ((l.vx = Math.sin(l.t * 1.5) * 16), (l.vy = Math.cos(l.t * 1.7) * 16)),
-      api.Ye(e, l, l.vx * n, l.vy * n, 5),
+      (api.aiChase(e, l, n),
       (l.cd -= n),
       l.cd <= 0 && g < 100)
     ) {
@@ -1188,7 +1212,13 @@ api.yh = function yh(e, t, n) {
           api.G(e, "eshot")));
     }
     let C =
-        l.kind === "king" || l.kind === "golem" || l.kind === "lich" || l.kind === "audit" || l.kind === "morok"
+        l.kind === "king" ||
+        l.kind === "golem" ||
+        l.kind === "lich" ||
+        l.kind === "audit" ||
+        l.kind === "morok" ||
+        l.kind === "stamper" ||
+        l.kind === "reklamator"
           ? 15
           : l.kind === "phantom"
             ? 14
@@ -1204,6 +1234,8 @@ api.yh = function yh(e, t, n) {
         l.kind === "lich" ||
         l.kind === "audit" ||
         l.kind === "morok" ||
+        l.kind === "stamper" ||
+        l.kind === "reklamator" ||
         l.kind === "charger" ||
         l.kind === "zombie" ||
         l.kind === "spider" ||

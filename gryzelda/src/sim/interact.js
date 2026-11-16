@@ -44,14 +44,14 @@ api.Qp = function Qp(e, t, n, i) {
     a === "J"
       ? (Math.random() < 0.5
           ? e.items.push({ kind: "heart", x: r, y: s, v: 4, id: "", taken: !1 })
-          : e.items.push({ kind: "coin", x: r, y: s, v: 3, id: "", taken: !1 }),
+          : e.items.push({ kind: "coin", x: r, y: s, v: 3 * api.coinV(e.zone), id: "", taken: !1 }),
         api.ne(e, "Skrzynia poszła w drzazgi.", 1.8))
       : a === "B"
-        ? (e.items.push({ kind: "coin", x: r, y: s, v: 2, id: "", taken: !1 }),
+        ? (e.items.push({ kind: "coin", x: r, y: s, v: 2 * api.coinV(e.zone), id: "", taken: !1 }),
           Math.random() < 0.35 && api.Rf(e, r, s),
           api.ne(e, "Beczka pękła.", 1.6))
         : (Math.random() < 0.4
-            ? e.items.push({ kind: "coin", x: r, y: s, v: 1, id: "", taken: !1 })
+            ? e.items.push({ kind: "coin", x: r, y: s, v: api.coinV(e.zone), id: "", taken: !1 })
             : api.Rf(e, r, s),
           api.ne(e, "Garnek w skorupach.", 1.4));
     return !0;
@@ -89,7 +89,7 @@ api.Qp = function Qp(e, t, n, i) {
         : a === "x"
           ? Math.random() < 0.45
             ? api.Rf(e, r, s)
-            : e.items.push({ kind: "coin", x: r, y: s, v: 1, id: "", taken: !1 })
+            : e.items.push({ kind: "coin", x: r, y: s, v: api.coinV(e.zone), id: "", taken: !1 })
           : Math.random() < 0.3 && api.Rf(e, r, s),
     !0
   );
@@ -152,8 +152,16 @@ api.flipToggle = function flipToggle(e, id) {
       2,
     );
   let [tx, ty] = id.split(":").map(Number),
-    key = "tog:" + e.zone + ":" + tx + ":" + ty;
-  ((e.f[key] = !e.f[key]), (e.dirty = !0), (e.layerDirty = !0), api.G(e, "lever"));
+    key = "tog:" + e.zone + ":" + tx + ":" + ty,
+    idx = z.toggles.findIndex((t) => t.tx === tx && t.ty === ty),
+    linked = (z.links && z.links[idx]) || [idx];
+  /* Dźwignie powiązane: jedna pociąga za sobą sąsiadki (patrz z.links). */
+  for (let j of linked) {
+    let t = z.toggles[j],
+      k = "tog:" + e.zone + ":" + t.tx + ":" + t.ty;
+    e.f[k] = !e.f[k];
+  }
+  ((e.dirty = !0), (e.layerDirty = !0), api.G(e, "lever"));
   let ok = z.toggles.every(
     (t, i) => !!e.f["tog:" + e.zone + ":" + t.tx + ":" + t.ty] === !!z.solve[i],
   );
@@ -169,7 +177,15 @@ api.flipToggle = function flipToggle(e, id) {
       ),
       api.Ct(e, 1.2, 1, api.Y(tx), api.Y(ty)),
       api.G(e, "chime"))
-    : api.ne(e, e.f[key] ? "Dźwignia w dół." : "Dźwignia w górze.", 1.3);
+    : api.ne(
+        e,
+        z.links
+          ? "Wzór na kracie: " + api.leverPattern(e, z, !0) + " · teraz: " + api.leverPattern(e, z, !1)
+          : e.f[key]
+            ? "Dźwignia w dół."
+            : "Dźwignia w górze.",
+        z.links ? 2.6 : 1.3,
+      );
 };
 
 api.Vp = function Vp(e, t, n) {
@@ -201,5 +217,5 @@ api.Rf = function Rf(e, t, n) {
       })
     : i < 0.22
       ? e.items.push({ kind: "heart", x: t, y: n, v: 3, id: "", taken: !1 })
-      : i < 0.7 && e.items.push({ kind: "coin", x: t, y: n, v: 1, id: "", taken: !1 });
+      : i < 0.7 && e.items.push({ kind: "coin", x: t, y: n, v: api.coinV(e.zone), id: "", taken: !1 });
 };

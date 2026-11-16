@@ -247,6 +247,7 @@ const NPC_LINE = {
   ghost: "Nieumarły też się odsuwa.",
   kot: "Miau!",
 };
+api.NPC_LINE = NPC_LINE;
 
 const NPC_LOSS = {
   bogdan: "Dobra. Jesteś silniejsza, niż wyglądasz. I tyle.",

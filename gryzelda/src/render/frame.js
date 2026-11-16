@@ -168,7 +168,7 @@ api.Dh = function Dh(e, t, n, i) {
               api.ge(e, "#ffd84a", Math.round(z.x), Math.round(z.y + 2), 11),
               (e.globalAlpha = 1)));
           let ye = Math.round(Math.max(0, z.z));
-          (z.kind === "king" || z.kind === "golem" || z.kind === "lich" || z.kind === "phantom"
+          (z.kind === "king" || z.kind === "golem" || z.kind === "lich" || z.kind === "phantom" || z.kind === "stamper" || z.kind === "reklamator"
             ? api.o(e, "rgba(0,0,0,0.3)", z.x - 13 + ye / 3, z.y + 9, 26 - ye / 1.5, 4)
             : z.kind === "bat"
               ? api.o(e, "rgba(0,0,0,0.22)", z.x - 4, z.y + 9, 8, 2)
@@ -189,6 +189,10 @@ api.Dh = function Dh(e, t, n, i) {
               (api.o(e, "#1b1424", z.x - 2, z.y - 22, 5, 9),
               api.o(e, "#ffd84a", z.x - 1, z.y - 21, 3, 4),
               api.o(e, "#ffd84a", z.x - 1, z.y - 16, 3, 2)),
+            ((z.windT > 0) || (z.kind === "snake" && z.cd < 0.45 && Math.hypot(z.x - t.px, z.y - t.py) < 100)) &&
+              (api.o(e, "#1b1424", z.x - 2, z.y - 22, 5, 9),
+              api.o(e, z.kind === "snake" ? "#c8ff5a" : "#ff9a3c", z.x - 1, z.y - 21, 3, 4),
+              api.o(e, z.kind === "snake" ? "#c8ff5a" : "#ff9a3c", z.x - 1, z.y - 16, 3, 2)),
             z.kind === "phone" &&
               z.cd < 0.8 &&
               (api.o(e, "#1b1424", z.x - 2, z.y - 22, 5, 9),
@@ -307,6 +311,7 @@ api.Dh = function Dh(e, t, n, i) {
   }
   ze.sort((z, R) => z.y - R.y);
   for (let z of ze) z.fn();
+  if (t.marks && t.marks.length && api.drawMark) for (let z of t.marks) api.drawMark(e, z, t.time || 0);
   if (t.spinT > 0) {
     let z = (1 - t.spinT / 0.3) * Math.PI * 2;
     for (let R = 0; R < 10; R++) {

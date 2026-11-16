@@ -786,6 +786,7 @@ api.Zp = function Zp(e, t) {
     let r = api.Ci(e, a);
     r && r.t === "talk" && r.to === t && i.push({ label: r.ask, go: "sq:" + a.id + ":to" });
   }
+  api.stampOpts && i.push(...api.stampOpts(e, t));
   return { lines: n, opts: i };
 };
 

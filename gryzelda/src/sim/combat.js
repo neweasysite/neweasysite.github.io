@@ -29,11 +29,12 @@ api.gi = function gi(e, t, n, i, a) {
       !e.f.rootEdge &&
       i * (e.px - t.x) + a * (e.py - t.y) > 0 &&
       ((s *= 0.3), api.Ne(e, t.x, t.y - 18, "blok!", "#a8c4ff")),
-    e.skills.fury >= 2 && (s *= 1.08));
+    e.skills.fury >= 2 && (s *= 1.08),
+    api.beastMult && (s *= api.beastMult(e, t.kind)));
   let u = Math.random() < api.Wf(e),
     f = Math.max(0, Math.round(s * (u ? 2 : 1) * 10) / 10);
   ((t.hp -= f), (t.inv = 0.28), (t.poise -= api.Jk(e) * (u ? 1.4 : 1)));
-  let c = t.kind !== "king" && t.kind !== "nest" && t.kind !== "golem" && t.kind !== "lich" && t.kind !== "audit" && t.kind !== "phantom" && t.kind !== "morok",
+  let c = t.kind !== "king" && t.kind !== "nest" && t.kind !== "golem" && t.kind !== "lich" && t.kind !== "audit" && t.kind !== "phantom" && t.kind !== "morok" && t.kind !== "stamper" && t.kind !== "reklamator",
     y = api.vt(0.25 + r * 0.08, 0.15, 0.95);
   if (c && t.poise <= 0) {
     let w = api.vt(55 - Math.max(0, r) * 10 + (r < 0 ? 15 : 0), 22, 70);
@@ -59,7 +60,7 @@ api.gi = function gi(e, t, n, i, a) {
 };
 
 api.ph = function ph(e, t) {
-  ((t.alive = !1), e.kills++);
+  ((t.alive = !1), e.kills++, api.beastKill && api.beastKill(e, t));
   t.key === "clip:glut" &&
     !e.f.blystka &&
     ((e.f.blystka = !0),
@@ -92,7 +93,11 @@ api.ph = function ph(e, t) {
                               ? 2
                               : t.kind === "snake"
                                 ? 5
-                                : t.kind === "golem"
+                                : t.kind === "stamper"
+                                  ? 60
+                                  : t.kind === "reklamator"
+                                  ? 110
+                                  : t.kind === "golem"
                                   ? 50
                                   : t.kind === "phantom"
                                     ? 45
@@ -165,6 +170,7 @@ api.ph = function ph(e, t) {
         2.6,
       );
   }
+  api.bossPurse && api.bossPurse(e, t.kind, t.x, t.y);
   if (
     (api.sh(e, t.kind, t.elite),
     t.elite &&
@@ -180,6 +186,30 @@ api.ph = function ph(e, t) {
         3.5,
       ),
       api.Ct(e, 1.4, 1.3, t.x, t.y)),
+    t.kind === "stamper" &&
+      !e.f.pieczatkarz &&
+      ((e.f.pieczatkarz = !0),
+      (e.dirty = !0),
+      (e.layerDirty = !0),
+      api.ne(
+        e,
+        "Pieczątkarz Ryszard odbija się ostatni raz: ODRZUCONO. Na posadzce zostaje Pieczątka Kierownicza. Krata w korytarzu powinna ją uznać.",
+        4.2,
+      ),
+      api.Ct(e, 1.4, 1.3, t.x, t.y)),
+    t.kind === "reklamator" &&
+      !e.f.reklamator &&
+      ((e.f.reklamator = !0),
+      (e.dirty = !0),
+      (e.marks = []),
+      api.ne(
+        e,
+        "Kierownik Reklamacji pada na biurko. Ostatnie słowa: „Proszę... wypełnić... ankietę satysfakcji...”. Szuflada za biurkiem się otwiera.",
+        4.8,
+      ),
+      api.Ct(e, 1.5, 1.5, t.x, t.y),
+      api.se(e, t.x, t.y, "#ff4d6d", 46, 120, 1),
+      api.G(e, "win")),
     t.kind === "golem" &&
       ((e.f.golem = !0),
       (e.dirty = !0),
@@ -227,7 +257,6 @@ api.ph = function ph(e, t) {
     t.kind === "audit" &&
       ((e.f.audit = !0),
       (e.dirty = !0),
-      (e.coins += 40),
       api.ne(
         e,
         "AUDYT-BOT z\u0142o\u017Cony do akt. Archiwistka Roma chce protok\xF3\u0142 zamkni\u0119cia.",
@@ -245,7 +274,6 @@ api.ph = function ph(e, t) {
       (e.dirty = !0),
       e.weapons.indexOf("zaglada") < 0 && e.weapons.push("zaglada"),
       (e.weapon = "zaglada"),
-      (e.coins += 80),
       (e.pts += 2),
       api.markHeirloom(),
       api.Es(e, 120),
@@ -276,6 +304,8 @@ api.ph = function ph(e, t) {
       t.kind !== "lich" &&
       t.kind !== "audit" &&
       t.kind !== "morok" &&
+      t.kind !== "stamper" &&
+      t.kind !== "reklamator" &&
       (!t.farm || Math.random() < 0.35) &&
       api.Rf(e, t.x, t.y);
   api.Es(e, a);
@@ -308,6 +338,7 @@ api.Ps = function Ps(e, t) {
       api.se(e, n.x, n.y, "#5cf28a", 70, 140, 1.1),
       api.se(e, n.x, n.y, "#ffd84a", 50, 100, 1.1),
       api.ne(e, "SUPPORT-BOT 3000: Zg\u0142oszenie... zamkni\u0119te... jako rozwi\u0105zane.", 4),
+      api.bossPurse(e, "support", n.x, n.y),
       api.Ct(e, 1.5, 1.8, n.x, n.y),
       api.Es(e, 80),
       e.items.push({
@@ -434,7 +465,11 @@ api.Pi = function Pi(e, t, n, i, a = "") {
                                 ? 2
                                 : t === "snake"
                                   ? 4
-                                  : t === "golem"
+                                  : t === "stamper"
+                                    ? 34
+                                    : t === "reklamator"
+                                    ? 62
+                                    : t === "golem"
                                     ? 40
                                     : t === "phantom"
                                       ? 36
@@ -451,7 +486,7 @@ api.Pi = function Pi(e, t, n, i, a = "") {
     u = api.Zk(e.zone, t),
     f =
       Math.round(
-        (4 + u * 1.6 + (t === "shield" || t === "golem" || t === "lich" || t === "king" || t === "audit" || t === "morok" ? 10 : 0)) *
+        (4 + u * 1.6 + (t === "shield" || t === "golem" || t === "lich" || t === "king" || t === "audit" || t === "morok" || t === "stamper" || t === "reklamator" ? 10 : 0)) *
           10,
       ) / 10;
   return {

@@ -129,6 +129,18 @@ api.tryNorthGate = function tryNorthGate(e, u, mx, my) {
   api.ne(e, "Pieczęć Lasu wchodzi w zamek jak pieczątka we wniosek. Brama puszcza, a pieczęć zostaje w zamku.", 4);
 };
 
+/* Zamknięta krata (E) z podpowiedzią strefy: krótki komunikat przy zderzeniu, nie częściej niż co 6 s. */
+api.tryGateHint = function tryGateHint(e, u, mx, my) {
+  let z = api.qe[e.zone];
+  if (!z || !z.gateHint || !z.gateFlag || e.f[z.gateFlag]) return;
+  let tx = Math.floor((u.x + Math.sign(mx) * 8) / api.T),
+    ty = Math.floor((u.y + Math.sign(my) * 8) / api.T);
+  if (api.Pe(e, e.zone, tx, ty) !== "E") return;
+  if ((e.gateHintT || 0) > e.time) return;
+  e.gateHintT = e.time + 6;
+  api.ne(e, z.gateHint, 3.4);
+};
+
 /* Wyjście jest otwarte, jeśli nie zasłania go zamknięta krata, brama albo portal. */
 api.exitOpen = function exitOpen(e, zid, ex) {
   if (!e || !e.f) return !0;
